@@ -18,8 +18,12 @@ import { useState, useRef, useCallback, useMemo } from "react";
  * Required by enterprise buyers everywhere
  */
 
+// ─── Types ───
+type Status = "pass" | "fail" | "na";
+type Criterion = { id: string; title: string; level: string; principle: string; status: Status; notes: string };
+
 // ─── WCAG 2.1 AA Success Criteria (simplified) ───
-const WCAG_CRITERIA = [
+const WCAG_CRITERIA: Criterion[] = [
   // Perceivable
   { id: "1.1.1", title: "Non-text Content", level: "A", principle: "Perceivable", status: "fail", notes: "4 images missing alt text" },
   { id: "1.2.1", title: "Audio-only and Video-only", level: "A", principle: "Perceivable", status: "na", notes: "No pre-recorded media" },
@@ -79,7 +83,7 @@ const statusIcon = { pass: "✓", fail: "✗", na: "—" };
 const statusColor = { pass: "#059669", fail: "#dc2626", na: "#64748b" };
 const statusBg = { pass: "#052e16", fail: "#450a0a", na: "#1a1a2e" };
 
-function getStats(criteria) {
+function getStats(criteria: Criterion[]) {
   const pass = criteria.filter(c => c.status === "pass").length;
   const fail = criteria.filter(c => c.status === "fail").length;
   const na = criteria.filter(c => c.status === "na").length;
@@ -89,7 +93,7 @@ function getStats(criteria) {
 }
 
 // ─── Score Ring ───
-function ScoreRing({ score, size = 100, label, color }) {
+function ScoreRing({ score, size = 100, label, color }: { score: number; size?: number; label: string; color?: string }) {
   const r = (size - 12) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ - (score / 100) * circ;
@@ -110,15 +114,15 @@ function ScoreRing({ score, size = 100, label, color }) {
 
 // ─── Main ───
 export default function CompliancePage() {
-  const [expandedPrinciple, setExpandedPrinciple] = useState(null);
+  const [expandedPrinciple, setExpandedPrinciple] = useState<string | null>(null);
   const [showOnlyFails, setShowOnlyFails] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
-  const liveRef = useRef(null);
-  const announce = useCallback((msg) => { if (liveRef.current) { liveRef.current.textContent = ""; requestAnimationFrame(() => { if (liveRef.current) liveRef.current.textContent = msg; }); } }, []);
+  const liveRef = useRef<HTMLDivElement | null>(null);
+  const announce = useCallback((msg: string) => { if (liveRef.current) { liveRef.current.textContent = ""; requestAnimationFrame(() => { if (liveRef.current) liveRef.current.textContent = msg; }); } }, []);
 
   const overall = getStats(WCAG_CRITERIA);
   const byPrinciple = useMemo(() => {
-    const groups = {};
+    const groups: Record<string, Criterion[]> = {};
     WCAG_CRITERIA.forEach(c => {
       if (!groups[c.principle]) groups[c.principle] = [];
       groups[c.principle].push(c);
