@@ -1,0 +1,217 @@
+// ─── AccessiScan Database Schema ───
+// Supabase (PostgreSQL) via Prisma ORM
+// Run: npx prisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Auth Models (NextAuth) ───
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  plan          Plan      @default(FREE)
+  stripeId      String?   @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  sites    Site[]
+  reviews  Review[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── Core Business Models ───
+
+model Site {
+  id        String   @id @default(cuid())
+  url       String
+  name      String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scans Scan[]
+
+  @@unique([url, userId])
+  @@map("sites")
+}
+
+model Scan {
+  id          String     @id @default(cuid())
+  siteId      String
+  status      ScanStatus @default(PENDING)
+  score       Int?       // 0-100 overall accessibility score
+  wcagScore   Int?       // WCAG 2.1 AA compliance percentage
+  adaScore    Int?       // ADA Title III compliance percentage
+  ariaScore   Int?       // ARIA best practices percentage
+  pagesCount  Int        @default(0)
+  issueCount  Int        @default(0)
+  fixedCount  Int        @default(0)
+  duration    Int?       // scan duration in seconds
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+
+  site   Site    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  issues Issue[]
+  pages  Page[]
+
+  @@map("scans")
+}
+
+model Page {
+  id            String  @id @default(cuid())
+  scanId        String
+  url           String
+  title         String?
+  screenshotUrl String? // stored in Supabase Storage
+  status        String  @default("scanned")
+
+  scan   Scan    @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  issues Issue[]
+
+  @@map("pages")
+}
+
+model Issue {
+  id          String        @id @default(cuid())
+  scanId      String
+  pageId      String?
+  severity    IssueSeverity
+  title       String
+  description String?
+  rule        String        // e.g., "WCAG 2.1 - 1.1.1"
+  ruleId      String?       // axe-core rule ID
+  standard    Standard      @default(WCAG)
+  element     String?       // HTML element selector
+  htmlSnippet String?       // the actual HTML code
+  pageUrl     String?
+  status      IssueStatus   @default(OPEN)
+  needsHuman  Boolean       @default(false)
+  fixSuggestion String?     // auto-generated fix recommendation
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  scan    Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  page    Page?    @relation(fields: [pageId], references: [id])
+  reviews Review[]
+
+  @@map("issues")
+}
+
+model Review {
+  id         String       @id @default(cuid())
+  issueId    String
+  reviewerId String
+  status     ReviewStatus @default(PENDING)
+  feedback   String?      // the human expert's written feedback
+  severity   IssueSeverity? // reviewer can override severity
+  fixCode    String?      // code suggestion from reviewer
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  issue    Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  reviewer User  @relation(fields: [reviewerId], references: [id])
+
+  @@map("reviews")
+}
+
+// ─── Enums ───
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+  ENTERPRISE
+}
+
+enum ScanStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum IssueSeverity {
+  CRITICAL
+  SERIOUS
+  MODERATE
+  MINOR
+}
+
+enum IssueStatus {
+  OPEN
+  IN_REVIEW
+  FIXED
+  WONT_FIX
+  FALSE_POSITIVE
+}
+
+enum ReviewStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Standard {
+  WCAG
+  ADA
+  SECTION508
+  ARIA
+  EAA
+}
