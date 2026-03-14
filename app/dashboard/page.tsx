@@ -25,6 +25,7 @@ export default function DashboardPage() {
           { label: "Critical Issues", value: "0", sub: "None found yet", color: "#DC2626" },
           { label: "Human Reviews", value: "0", sub: "Pending your review", color: "#6366F1" },
           { label: "Pages Scanned", value: "0", sub: "Start scanning", color: "#059669" },
+          
         ].map((stat, i) => (
           <div
             key={i}

@@ -14,6 +14,7 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  Layers,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: "/vision", label: "Vision Sim", icon: Eye },
   { href: "/reviews", label: "Human Review", icon: Users },
   { href: "/compliance", label: "Compliance", icon: ShieldCheck },
+  { href: "/dashboard/universal-design", label: "UD Audit", icon: Layers },
 ];
 
 export default function DashboardLayout({
