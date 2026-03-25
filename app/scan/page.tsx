@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { useStartScan, useScanProgress } from "@/hooks/use-api";
 import Link from "next/link";
 import {
@@ -110,11 +111,15 @@ function SeverityBadge({ severity }: { severity: string }) {
 
 // ─── Main Scan Page ───
 export default function ScanPage() {
+  const { data: session } = useSession();
+  const isGuest = !session?.user;
+
   const [url, setUrl] = useState("");
   const [viewState, setViewState] = useState<"idle" | "scanning" | "complete" | "error">("idle");
   const [simulatedPhase, setSimulatedPhase] = useState(0);
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const [issueFilter, setIssueFilter] = useState("all");
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   const { startScan, loading: scanLoading, error: scanError, scanId } = useStartScan();
   const { progress, status, result } = useScanProgress(scanId);
@@ -122,6 +127,7 @@ export default function ScanPage() {
   const liveRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const signupModalTriggerRef = useRef<HTMLButtonElement>(null);
 
   const announce = useCallback((msg: string) => {
     if (liveRef.current) {
@@ -136,10 +142,25 @@ export default function ScanPage() {
   const handleStartScan = async () => {
     if (!url.trim()) return;
 
+    // Guest single-URL enforcement
+    if (isGuest) {
+      const storedUrl = sessionStorage.getItem("guest_scan_url");
+      if (storedUrl && storedUrl !== url) {
+        setShowSignupModal(true);
+        return; // block the scan
+      }
+    }
+
     try {
       setViewState("scanning");
       announce(`Scan started for ${url}`);
-      await startScan(url);
+      const data = await startScan(url);
+
+      // Store guest scan info in sessionStorage
+      if (data?.isGuest) {
+        sessionStorage.setItem("guest_scan_id", data.scanId);
+        sessionStorage.setItem("guest_scan_url", url);
+      }
 
       // Simulate phase progression while real scan runs
       let phase = 0;
@@ -603,6 +624,160 @@ export default function ScanPage() {
               <p className="text-xs text-slate-500 leading-relaxed">{item.desc}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ── Sticky gate bar: shown after completed guest scan ── */}
+      {viewState === "complete" && isGuest && (
+        <div
+          role="region"
+          aria-label="Free scan complete — sign up to save results"
+          aria-live="polite"
+          style={{
+            position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 200,
+            background: "var(--color-surface-raised)",
+            borderTop: "1px solid var(--color-border)",
+            padding: "16px 32px",
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20,
+          }}
+        >
+          <div>
+            <p style={{ fontWeight: 600, color: "var(--color-text-primary)", margin: 0, fontSize: "1rem" }}>
+              Save your results and scan more sites
+            </p>
+            <p style={{ color: "var(--color-text-secondary)", margin: "3px 0 0", fontSize: "0.875rem" }}>
+              Free account — no credit card, 30 seconds
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center", flexShrink: 0 }}>
+            <button
+              ref={signupModalTriggerRef}
+              onClick={() => setShowSignupModal(true)}
+              aria-haspopup="dialog"
+              style={{
+                background: "var(--color-brand)", color: "#fff",
+                fontSize: "0.9375rem", fontWeight: 600,
+                padding: "11px 24px", borderRadius: 8, border: "none", cursor: "pointer",
+                minHeight: 44, fontFamily: "inherit",
+              }}
+            >
+              Create free account
+            </button>
+            <button
+              onClick={() => { window.location.href = "/login"; }}
+              style={{
+                color: "var(--color-text-secondary)", fontSize: "0.9375rem",
+                background: "none", border: "none", cursor: "pointer",
+                textDecoration: "underline", minHeight: 44, padding: "0 8px", fontFamily: "inherit",
+              }}
+            >
+              Log in
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Second-URL modal: shown when guest tries to scan a new URL ── */}
+      {showSignupModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="signup-modal-title"
+          aria-describedby="signup-modal-desc"
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            zIndex: 300, padding: 20,
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setShowSignupModal(false);
+              (signupModalTriggerRef.current ?? inputRef.current)?.focus();
+            }
+          }}
+        >
+          <div
+            style={{
+              background: "var(--color-surface-raised)",
+              border: "1px solid var(--color-border)",
+              borderRadius: 16, padding: 40, maxWidth: 440, width: "100%", position: "relative",
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Tab") return;
+              const focusable = Array.from(
+                e.currentTarget.querySelectorAll<HTMLElement>(
+                  "button, [href], input, [tabindex]:not([tabindex=\"-1\"])"
+                )
+              );
+              const first = focusable[0];
+              const last = focusable[focusable.length - 1];
+              if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault(); last.focus();
+              } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault(); first.focus();
+              }
+            }}
+          >
+            {/* Close button — receives focus on open */}
+            <button
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+              onClick={() => {
+                setShowSignupModal(false);
+                (signupModalTriggerRef.current ?? inputRef.current)?.focus();
+              }}
+              aria-label="Close dialog"
+              style={{
+                position: "absolute", top: 16, right: 16,
+                background: "var(--color-surface-overlay)", border: "1px solid var(--color-border)",
+                borderRadius: 6, width: 36, height: 36,
+                cursor: "pointer", color: "var(--color-text-secondary)",
+                fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >✕</button>
+
+            <h2 id="signup-modal-title" style={{ fontSize: "1.375rem", fontWeight: 700, color: "var(--color-text-primary)", marginBottom: 10 }}>
+              You&apos;ve found real issues — now fix them.
+            </h2>
+            <p id="signup-modal-desc" style={{ fontSize: "0.9375rem", color: "var(--color-text-secondary)", marginBottom: 24, lineHeight: 1.65 }}>
+              Your free scan is complete. Create a free account to scan additional sites, save this report, and start fixing with AI suggestions.
+            </p>
+
+            <ul aria-label="What's included in a free account" style={{ listStyle: "none", padding: 0, marginBottom: 24 }}>
+              {[
+                "Scan up to 3 sites per month",
+                "Save and share scan reports",
+                "AI-generated code fix suggestions",
+                "Track remediation progress over time",
+                "Vision simulation — 8 color blindness modes",
+              ].map((perk) => (
+                <li key={perk} style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  fontSize: "0.9375rem", color: "var(--color-text-secondary)",
+                  padding: "10px 0", borderBottom: "1px solid var(--color-border)",
+                }}>
+                  <span aria-hidden="true" style={{ color: "var(--color-success)", flexShrink: 0 }}>✓</span>
+                  {perk}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => { window.location.href = "/signup"; }}
+              style={{
+                width: "100%", background: "var(--color-brand)", color: "#fff",
+                fontSize: "1rem", fontWeight: 600, padding: 14,
+                borderRadius: 8, border: "none", cursor: "pointer",
+                minHeight: 48, fontFamily: "inherit",
+              }}
+            >
+              Create free account
+            </button>
+            <p style={{ textAlign: "center", marginTop: 14, fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>
+              Already have an account?{" "}
+              <a href="/login" style={{ color: "var(--color-brand)", textDecoration: "none" }}>Log in</a>
+            </p>
+          </div>
         </div>
       )}
     </div>
