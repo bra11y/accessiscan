@@ -384,4 +384,4 @@ async function crawlAndScan(baseUrl: string): Promise<PageResult[]> {
 }
 
 // ─── Export for API routes ───
-export { calculateScore, generateFixSuggestion, classifyStandard };
+export { calculateScore, generateFixSuggestion, classifyStandard, crawlAndScan };
