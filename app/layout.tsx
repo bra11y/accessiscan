@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono, Outfit } from "next/font/google";
+import { Atkinson_Hyperlegible, JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 
-const fontBody = DM_Sans({
+const fontBody = Atkinson_Hyperlegible({
   subsets: ["latin"],
+  weight: ["400", "700"],
   variable: "--font-body",
   display: "swap",
 });
