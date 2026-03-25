@@ -67,13 +67,14 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
       }
-      // Fetch fresh plan data
+      // Fetch fresh plan + role on every token refresh
       if (token.id) {
         const dbUser = await db.user.findUnique({
           where: { id: token.id as string },
-          select: { plan: true },
+          select: { plan: true, role: true },
         });
         token.plan = dbUser?.plan ?? "FREE";
+        (token as any).role = dbUser?.role ?? "USER";
       }
       return token;
     },
@@ -82,6 +83,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).plan = token.plan;
+        (session.user as any).role = (token as any).role;
       }
       return session;
     },
