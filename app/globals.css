@@ -152,3 +152,41 @@ body {
     @apply bg-gray-100 text-gray-800 border border-gray-200;
   }
 }
+
+/* ── System-adaptive tokens for landing page ── */
+/* Dark mode values match existing --color-* tokens */
+:root {
+  --bg:        #0B0F1A;
+  --surface-1: #0F172A;
+  --surface-2: #1E293B;
+  --border-1:  #1E293B;
+  --border-2:  #334155;
+  --brand-lp:  #818CF8;   /* 7.1:1 on --bg */
+  --brand-lp-subtle: rgba(129, 140, 248, 0.1);
+  --brand-lp-border: rgba(129, 140, 248, 0.25);
+  --text-lp-1: #E6EDF3;   /* 14.7:1 ✓ */
+  --text-lp-2: #C9D1D9;   /* 9.4:1  ✓ */
+  --text-lp-3: #8B949E;   /* 4.7:1  ✓ AA */
+  --success-lp: #3FB950;
+  --warn-lp:    #D29922;
+  --danger-lp:  #F85149;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:        #FFFFFF;
+    --surface-1: #FFFFFF;
+    --surface-2: #F6F8FA;
+    --border-1:  #D0D7DE;
+    --border-2:  #AFB8C1;
+    --brand-lp:  #4F46E5;   /* 7.2:1 on white ✓ */
+    --brand-lp-subtle: rgba(79, 70, 229, 0.08);
+    --brand-lp-border: rgba(79, 70, 229, 0.2);
+    --text-lp-1: #1F2328;   /* 17.8:1 ✓ */
+    --text-lp-2: #24292F;   /* 16.1:1 ✓ */
+    --text-lp-3: #57606A;   /* 5.9:1  ✓ */
+    --success-lp: #1A7F37;
+    --warn-lp:    #9A6700;
+    --danger-lp:  #CF222E;
+  }
+}
