@@ -22,6 +22,7 @@ model User {
   passwordHash  String?
   image         String?
   plan          Plan      @default(FREE)
+  role          Role      @default(USER)
   stripeId      String?   @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -178,6 +179,11 @@ enum Plan {
   PRO
   BUSINESS
   ENTERPRISE
+}
+
+enum Role {
+  USER
+  SUPER_ADMIN
 }
 
 enum ScanStatus {
