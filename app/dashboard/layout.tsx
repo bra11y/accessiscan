@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import {
   BarChart3,
   ScanLine,
@@ -34,6 +34,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <div className="flex min-h-screen bg-surface">
@@ -102,6 +103,35 @@ export default function DashboardLayout({
             );
           })}
         </div>
+
+        {/* User info */}
+        {!collapsed && session?.user && (
+          <div
+            className="border-t px-4 py-3 flex items-center gap-2"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-slate-200 truncate leading-tight">
+                {(session.user as any).name || (session.user as any).email}
+              </p>
+              <p className="text-[10px] text-slate-500 truncate">{(session.user as any).email}</p>
+            </div>
+            {(session.user as any).role === "SUPER_ADMIN" && (
+              <span
+                aria-label="Super admin account"
+                style={{
+                  fontSize: "0.625rem", fontWeight: 700, padding: "1px 6px",
+                  background: "rgba(129,140,248,0.15)", color: "#818CF8",
+                  border: "1px solid rgba(129,140,248,0.3)",
+                  borderRadius: 4, letterSpacing: "0.05em", textTransform: "uppercase",
+                  flexShrink: 0,
+                }}
+              >
+                Admin
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Collapse + Sign Out */}
         <div
