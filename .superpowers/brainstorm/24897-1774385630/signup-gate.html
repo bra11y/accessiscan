@@ -1,0 +1,141 @@
+<h2>Sign-up gate after free scan results</h2>
+<p class="subtitle">The user sees their full results. Then what? Three ways to prompt sign-up without blocking the result view.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="sticky-bar" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0a0a0a;font-family:monospace;min-height:220px;position:relative;overflow:hidden;display:flex;flex-direction:column;">
+      <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(120,200,50,0.025) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.025) 60px),repeating-linear-gradient(90deg,rgba(120,200,50,0.025) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.025) 60px);"></div>
+      <!-- Scan results area -->
+      <div style="position:relative;z-index:1;flex:1;padding:10px 12px;">
+        <div style="color:#6abf2a;font-size:7px;letter-spacing:0.12em;margin-bottom:8px;">// SCAN COMPLETE — example.com</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#1e1e1e;margin-bottom:8px;">
+          <div style="background:#0d0d0d;padding:7px;text-align:center;"><div style="color:#f0ece4;font-size:13px;font-weight:800;">72</div><div style="color:#444;font-size:6px;letter-spacing:0.08em;">SCORE</div></div>
+          <div style="background:#0d0d0d;padding:7px;text-align:center;"><div style="color:#dc2626;font-size:13px;font-weight:800;">14</div><div style="color:#444;font-size:6px;letter-spacing:0.08em;">ISSUES</div></div>
+          <div style="background:#0d0d0d;padding:7px;text-align:center;"><div style="color:#d97706;font-size:13px;font-weight:800;">3</div><div style="color:#444;font-size:6px;letter-spacing:0.08em;">CRITICAL</div></div>
+        </div>
+        <!-- Issues list (visible, not blurred) -->
+        <div style="border:1px solid #1e1e1e;margin-bottom:4px;">
+          <div style="padding:6px 8px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:6px;">
+            <span style="background:#dc2626;color:#fff;font-size:6px;padding:2px 5px;letter-spacing:0.06em;">CRITICAL</span>
+            <span style="color:#ccc;font-size:7px;">Images missing alt text (7 instances)</span>
+          </div>
+          <div style="padding:6px 8px;display:flex;align-items:center;gap:6px;">
+            <span style="background:#d97706;color:#fff;font-size:6px;padding:2px 5px;letter-spacing:0.06em;">SERIOUS</span>
+            <span style="color:#ccc;font-size:7px;">Color contrast ratio fails 4.5:1 minimum</span>
+          </div>
+        </div>
+        <div style="color:#333;font-size:6px;text-align:center;">...full results visible above...</div>
+      </div>
+      <!-- Sticky bottom bar -->
+      <div style="position:relative;z-index:2;background:#0d1a00;border-top:1px solid #6abf2a;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="color:#6abf2a;font-size:8px;font-weight:700;letter-spacing:0.05em;">Save results & scan again</div>
+          <div style="color:#444;font-size:6px;letter-spacing:0.08em;">FREE ACCOUNT · NO CREDIT CARD</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <div style="background:#6abf2a;color:#0a0a0a;font-size:7px;padding:5px 10px;font-weight:700;letter-spacing:0.08em;">SIGN UP →</div>
+          <div style="color:#444;font-size:7px;">Log in</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Sticky bottom bar</h3>
+      <p>A slim green-tinted bar anchored to the bottom of the viewport. Results stay fully readable. Persistent but non-intrusive. Disappears on sign-up.</p>
+      <ul style="font-size:0.82rem;color:#888;padding-left:1.2em;margin-top:8px;">
+        <li>Least disruptive to result reading</li>
+        <li>Always visible — no scrolling needed</li>
+        <li>Fits the editorial aesthetic well</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" data-choice="top-banner" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0a0a0a;font-family:monospace;min-height:220px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(120,200,50,0.025) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.025) 60px),repeating-linear-gradient(90deg,rgba(120,200,50,0.025) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.025) 60px);"></div>
+      <div style="position:relative;z-index:1;padding:10px 12px;">
+        <!-- Top banner -->
+        <div style="background:#111;border:1px solid #1e1e1e;border-left:3px solid #6abf2a;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="color:#f0ece4;font-size:7px;">✓ Scan complete — <span style="color:#6abf2a;">sign up free</span> to save & rescan</div>
+          <div style="background:#6abf2a;color:#0a0a0a;font-size:6px;padding:3px 8px;font-weight:700;">CREATE ACCOUNT →</div>
+        </div>
+        <!-- Results below -->
+        <div style="color:#6abf2a;font-size:7px;letter-spacing:0.12em;margin-bottom:6px;">// RESULTS — example.com</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#1e1e1e;margin-bottom:8px;">
+          <div style="background:#0d0d0d;padding:6px;text-align:center;"><div style="color:#f0ece4;font-size:12px;font-weight:800;">72</div><div style="color:#444;font-size:6px;">SCORE</div></div>
+          <div style="background:#0d0d0d;padding:6px;text-align:center;"><div style="color:#dc2626;font-size:12px;font-weight:800;">14</div><div style="color:#444;font-size:6px;">ISSUES</div></div>
+          <div style="background:#0d0d0d;padding:6px;text-align:center;"><div style="color:#d97706;font-size:12px;font-weight:800;">3</div><div style="color:#444;font-size:6px;">CRITICAL</div></div>
+        </div>
+        <div style="border:1px solid #1e1e1e;">
+          <div style="padding:6px 8px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:6px;">
+            <span style="background:#dc2626;color:#fff;font-size:6px;padding:2px 5px;">CRITICAL</span>
+            <span style="color:#ccc;font-size:7px;">Images missing alt text (7 instances)</span>
+          </div>
+          <div style="padding:6px 8px;display:flex;align-items:center;gap:6px;">
+            <span style="background:#d97706;color:#fff;font-size:6px;padding:2px 5px;">SERIOUS</span>
+            <span style="color:#ccc;font-size:7px;">Color contrast ratio fails 4.5:1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Banner below nav</h3>
+      <p>A slim banner appears at the top of the results area when the scan completes. Left-border accent, inline CTA. Scrolls away as the user reads results.</p>
+      <ul style="font-size:0.82rem;color:#888;padding-left:1.2em;margin-top:8px;">
+        <li>Appears at natural reading start point</li>
+        <li>Scrolls out of view — low ongoing pressure</li>
+        <li>Clean, inline with results flow</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" data-choice="inline-cta" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0a0a0a;font-family:monospace;min-height:220px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(120,200,50,0.025) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.025) 60px),repeating-linear-gradient(90deg,rgba(120,200,50,0.025) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.025) 60px);"></div>
+      <div style="position:relative;z-index:1;padding:10px 12px;">
+        <div style="color:#6abf2a;font-size:7px;letter-spacing:0.12em;margin-bottom:6px;">// RESULTS — example.com</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#1e1e1e;margin-bottom:8px;">
+          <div style="background:#0d0d0d;padding:6px;text-align:center;"><div style="color:#f0ece4;font-size:12px;font-weight:800;">72</div><div style="color:#444;font-size:6px;">SCORE</div></div>
+          <div style="background:#0d0d0d;padding:6px;text-align:center;"><div style="color:#dc2626;font-size:12px;font-weight:800;">14</div><div style="color:#444;font-size:6px;">ISSUES</div></div>
+          <div style="background:#0d0d0d;padding:6px;text-align:center;"><div style="color:#d97706;font-size:12px;font-weight:800;">3</div><div style="color:#444;font-size:6px;">CRITICAL</div></div>
+        </div>
+        <!-- First 2 issues visible -->
+        <div style="border:1px solid #1e1e1e;margin-bottom:6px;">
+          <div style="padding:6px 8px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:6px;">
+            <span style="background:#dc2626;color:#fff;font-size:6px;padding:2px 5px;">CRITICAL</span>
+            <span style="color:#ccc;font-size:7px;">Images missing alt text (7 instances)</span>
+          </div>
+          <div style="padding:6px 8px;display:flex;align-items:center;gap:6px;">
+            <span style="background:#d97706;color:#fff;font-size:6px;padding:2px 5px;">SERIOUS</span>
+            <span style="color:#ccc;font-size:7px;">Color contrast ratio fails 4.5:1</span>
+          </div>
+        </div>
+        <!-- Inline CTA card woven in -->
+        <div style="border:1px solid #6abf2a;background:#0d1a00;padding:8px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="color:#6abf2a;font-size:7px;font-weight:700;margin-bottom:2px;">+ 12 more issues found</div>
+            <div style="color:#444;font-size:6px;">Sign up free to view all, export report & fix with AI</div>
+          </div>
+          <div style="background:#6abf2a;color:#0a0a0a;font-size:6px;padding:4px 8px;font-weight:700;white-space:nowrap;">UNLOCK →</div>
+        </div>
+        <!-- More issues blurred suggestion -->
+        <div style="border:1px solid #1e1e1e;opacity:0.35;filter:blur(1px);">
+          <div style="padding:6px 8px;border-bottom:1px solid #1e1e1e;display:flex;gap:6px;"><span style="background:#3b82f6;color:#fff;font-size:6px;padding:2px 5px;">MODERATE</span><span style="color:#ccc;font-size:7px;">████████████</span></div>
+          <div style="padding:6px 8px;display:flex;gap:6px;"><span style="background:#6b7280;color:#fff;font-size:6px;padding:2px 5px;">MINOR</span><span style="color:#ccc;font-size:7px;">███████████</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Inline CTA woven into results</h3>
+      <p>First 2 issues shown in full. Then an inline card: "+12 more issues — sign up to unlock." Remaining issues blurred below. Creates urgency without a modal.</p>
+      <ul style="font-size:0.82rem;color:#888;padding-left:1.2em;margin-top:8px;">
+        <li>Highest conversion pressure</li>
+        <li>Results teasing drives action</li>
+        <li>Slightly misleading if user expects "full results"</li>
+        <li>Could feel manipulative — use carefully</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<p class="subtitle" style="margin-top:24px;">You said "full results before any gate" — A and B honour that fully. C partially gates. All can coexist (e.g., A sticky bar + B banner).</p>

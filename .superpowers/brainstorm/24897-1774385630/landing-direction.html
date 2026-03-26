@@ -1,0 +1,137 @@
+<h2>Landing Page Direction</h2>
+<p class="subtitle">Which visual direction feels right for AccessiScan? All three adapt to system light/dark preference.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="editorial" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0a0a0a;padding:16px;font-family:monospace;min-height:200px;position:relative;overflow:hidden;">
+      <!-- Animated grid suggestion -->
+      <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(120,200,50,0.04) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.04) 60px),repeating-linear-gradient(90deg,rgba(120,200,50,0.04) 0px,transparent 1px,transparent 59px,rgba(120,200,50,0.04) 60px);"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="color:#6abf2a;font-size:9px;letter-spacing:0.15em;margin-bottom:12px;">// ACCESSIBILITY AUDITING PLATFORM</div>
+        <div style="color:#f0ece4;font-size:22px;font-weight:800;line-height:1;margin-bottom:4px;">Your website</div>
+        <div style="color:#f0ece4;font-size:22px;font-weight:800;line-height:1;margin-bottom:12px;">is <span style="color:#6abf2a;">excluding</span> people.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+          <span style="border:1px solid #2a2a2a;color:#aaa;font-size:8px;padding:3px 8px;border-radius:100px;font-family:monospace;">WCAG 2.1 AA</span>
+          <span style="border:1px solid #2a2a2a;color:#aaa;font-size:8px;padding:3px 8px;border-radius:100px;font-family:monospace;">ADA Compliance</span>
+          <span style="border:1px solid #2a2a2a;color:#aaa;font-size:8px;padding:3px 8px;border-radius:100px;font-family:monospace;">Section 508</span>
+        </div>
+        <!-- Marquee strip -->
+        <div style="background:#111;border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e;padding:5px 0;overflow:hidden;white-space:nowrap;">
+          <span style="font-size:7px;letter-spacing:0.1em;color:#555;font-family:monospace;">WCAG · ADA · ARIA · SECTION 508 · COLOR CONTRAST · KEYBOARD NAV · SCREEN READER · FOCUS MANAGEMENT ·&nbsp;</span>
+          <span style="font-size:7px;letter-spacing:0.1em;color:#555;font-family:monospace;">WCAG · ADA · ARIA · SECTION 508 · COLOR CONTRAST · KEYBOARD NAV · SCREEN READER · FOCUS MANAGEMENT</span>
+        </div>
+        <!-- Stat row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#1e1e1e;margin-top:14px;">
+          <div style="background:#111;padding:8px;text-align:center;">
+            <div style="color:#6abf2a;font-size:14px;font-weight:800;font-family:monospace;">98%</div>
+            <div style="color:#555;font-size:7px;letter-spacing:0.08em;font-family:monospace;">SITES FAIL</div>
+          </div>
+          <div style="background:#111;padding:8px;text-align:center;">
+            <div style="color:#6abf2a;font-size:14px;font-weight:800;font-family:monospace;">€75K</div>
+            <div style="color:#555;font-size:7px;letter-spacing:0.08em;font-family:monospace;">EAA FINE</div>
+          </div>
+          <div style="background:#111;padding:8px;text-align:center;">
+            <div style="color:#6abf2a;font-size:14px;font-weight:800;font-family:monospace;">1 in 6</div>
+            <div style="color:#555;font-size:7px;letter-spacing:0.08em;font-family:monospace;">PEOPLE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Editorial Dark</h3>
+      <p>Inspired by the Vitalik prompt: animated grid, lime-green accents, monospace labels, marquee strip, stat counter grid. Dark by default, inverts gracefully to a pale cream/off-white in light mode. Bold typographic personality.</p>
+      <ul style="font-size:0.82rem;color:#888;padding-left:1.2em;margin-top:8px;">
+        <li>High personality, memorable</li>
+        <li>Space Mono + Syne fonts</li>
+        <li>Pill badges, section numbers (01 — Hero, 02 — Features)</li>
+        <li>Animated CSS grid background</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" data-choice="saas" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#ffffff;padding:16px;min-height:200px;position:relative;overflow:hidden;border-bottom:1px solid #eee;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-weight:700;color:#1a1a2e;font-size:12px;">AccessiScan</div>
+        <div style="background:#6366f1;color:#fff;font-size:8px;padding:4px 10px;border-radius:4px;font-weight:600;">Start Free</div>
+      </div>
+      <div style="color:#1a1a2e;font-size:18px;font-weight:800;line-height:1.2;margin-bottom:8px;">Automated Accessibility<br><span style="color:#6366f1;">Auditing & Compliance</span></div>
+      <div style="color:#64748b;font-size:9px;margin-bottom:12px;line-height:1.5;">Scan any website for WCAG, ADA, and Section 508 violations<br>in seconds. Fix faster with AI-powered suggestions.</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <div style="background:#6366f1;color:#fff;font-size:8px;padding:5px 10px;border-radius:6px;font-weight:600;">Scan Free</div>
+        <div style="border:1px solid #e2e8f0;color:#64748b;font-size:8px;padding:5px 10px;border-radius:6px;">View Pricing</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px;">
+          <div style="color:#6366f1;font-size:12px;font-weight:700;">98%</div>
+          <div style="color:#94a3b8;font-size:7px;">of sites fail basic checks</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px;">
+          <div style="color:#6366f1;font-size:12px;font-weight:700;">€75K</div>
+          <div style="color:#94a3b8;font-size:7px;">max EAA fine exposure</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Clean SaaS</h3>
+      <p>Standard high-converting SaaS landing page. Indigo brand, white light mode, dark mode via system preference. Familiar and trustworthy. Rounded cards, gradient CTAs, feature grid.</p>
+      <ul style="font-size:0.82rem;color:#888;padding-left:1.2em;margin-top:8px;">
+        <li>Familiar, high-trust aesthetic</li>
+        <li>Inter / system font stack</li>
+        <li>Card-based feature grid</li>
+        <li>Light mode by default (dark via system pref)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#f9f8f5;padding:16px;min-height:200px;position:relative;overflow:hidden;border-bottom:1px solid #e8e4da;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-size:9px;letter-spacing:0.12em;color:#1a1a1a;font-family:monospace;font-weight:700;">ACCESSISCAN — 2026</div>
+        <div style="border:1px solid #1a1a1a;color:#1a1a1a;font-size:8px;padding:4px 10px;border-radius:2px;font-family:monospace;">START FREE →</div>
+      </div>
+      <div style="font-size:9px;color:#5a7a2a;letter-spacing:0.15em;margin-bottom:8px;font-family:monospace;">// 01 — SCAN WITHOUT LIMITS</div>
+      <div style="font-size:20px;font-weight:800;line-height:1.1;color:#1a1a1a;margin-bottom:10px;">Accessibility<br>made <span style="color:#5a7a2a;">measurable.</span></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;">
+        <span style="border:1px solid #d4d0c8;color:#666;font-size:7px;padding:2px 7px;border-radius:100px;font-family:monospace;letter-spacing:0.05em;">WCAG 2.1 AA</span>
+        <span style="border:1px solid #d4d0c8;color:#666;font-size:7px;padding:2px 7px;border-radius:100px;font-family:monospace;letter-spacing:0.05em;">ADA</span>
+        <span style="border:1px solid #d4d0c8;color:#666;font-size:7px;padding:2px 7px;border-radius:100px;font-family:monospace;letter-spacing:0.05em;">Section 508</span>
+        <span style="border:1px solid #d4d0c8;color:#666;font-size:7px;padding:2px 7px;border-radius:100px;font-family:monospace;letter-spacing:0.05em;">EAA</span>
+      </div>
+      <!-- Divider with label -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="height:1px;flex:1;background:#d4d0c8;"></div>
+        <div style="font-size:7px;color:#aaa;font-family:monospace;letter-spacing:0.1em;">LIVE STATS</div>
+        <div style="height:1px;flex:1;background:#d4d0c8;"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:#d4d0c8;">
+        <div style="background:#f9f8f5;padding:8px;">
+          <div style="color:#5a7a2a;font-size:13px;font-weight:800;font-family:monospace;">98%</div>
+          <div style="color:#aaa;font-size:6px;letter-spacing:0.1em;font-family:monospace;text-transform:uppercase;">Sites Fail</div>
+        </div>
+        <div style="background:#f9f8f5;padding:8px;">
+          <div style="color:#5a7a2a;font-size:13px;font-weight:800;font-family:monospace;">€75K</div>
+          <div style="color:#aaa;font-size:6px;letter-spacing:0.1em;font-family:monospace;text-transform:uppercase;">EAA Fine</div>
+        </div>
+        <div style="background:#f9f8f5;padding:8px;">
+          <div style="color:#5a7a2a;font-size:13px;font-weight:800;font-family:monospace;">1 in 6</div>
+          <div style="color:#aaa;font-size:6px;letter-spacing:0.1em;font-family:monospace;text-transform:uppercase;">People</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Hybrid Editorial</h3>
+      <p>Takes editorial elements (monospace labels, section numbers, pill badges, stat grids, minimal borders) but in an off-white/cream light mode. Dark mode via system preference uses a warm near-black. Green accent shifts to match each mode.</p>
+      <ul style="font-size:0.82rem;color:#888;padding-left:1.2em;margin-top:8px;">
+        <li>Distinctive but professional</li>
+        <li>Space Mono labels + modern display font</li>
+        <li>Off-white (#f9f8f5) light / warm black dark</li>
+        <li>No grid animation — cleaner, faster</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:24px;">Click a card to select. All three support system light/dark preference and pass WCAG contrast minimums in both modes.</p>

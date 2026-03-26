@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccessiScan — Proposed Design</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-raised: #0d0d0d;
+    --border: #1e1e1e;
+    --accent: #c8f135;
+    --accent-muted: rgba(200,241,53,0.12);
+    --text: #f0ece4;
+    --muted: #555;
+    --muted2: #888;
+    --green-dark: #6abf2a;
+    --red: #dc2626;
+    --amber: #d97706;
+    --blue: #3b82f6;
+    font-size: 13px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f9f8f5;
+      --surface: #f2f0eb;
+      --surface-raised: #ede9e1;
+      --border: #d4d0c8;
+      --accent: #5a7a2a;
+      --accent-muted: rgba(90,122,42,0.1);
+      --text: #1a1a1a;
+      --muted: #aaa;
+      --muted2: #777;
+      --green-dark: #5a7a2a;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Space Mono', monospace; }
+
+  /* ── NAV ── */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    height: 48px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { color: var(--accent); font-size: 10px; letter-spacing: 0.1em; font-weight: 700; }
+  .nav-links { display: flex; gap: 24px; }
+  .nav-links a { color: var(--muted2); font-size: 9px; text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { background: var(--accent); color: var(--bg); font-size: 8px; padding: 6px 14px; font-weight: 700; letter-spacing: 0.1em; text-decoration: none; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--accent); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+
+  /* ── GRID BG ── */
+  .grid-bg {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(200,241,53,0.025) 0px, transparent 1px, transparent 59px, rgba(200,241,53,0.025) 60px),
+      repeating-linear-gradient(90deg, rgba(200,241,53,0.025) 0px, transparent 1px, transparent 59px, rgba(200,241,53,0.025) 60px);
+  }
+  @media (prefers-color-scheme: light) {
+    .grid-bg {
+      background-image:
+        repeating-linear-gradient(0deg, rgba(90,122,42,0.04) 0px, transparent 1px, transparent 59px, rgba(90,122,42,0.04) 60px),
+        repeating-linear-gradient(90deg, rgba(90,122,42,0.04) 0px, transparent 1px, transparent 59px, rgba(90,122,42,0.04) 60px);
+    }
+  }
+
+  /* ── HERO ── */
+  .hero { padding: 72px 32px 56px; position: relative; overflow: hidden; }
+  .hero-tag { color: var(--accent); font-size: 9px; letter-spacing: 0.15em; margin-bottom: 16px; }
+  .hero-headline { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 6vw, 4.5rem); font-weight: 800; line-height: 0.92; margin-bottom: 20px; }
+  .hero-headline .accent { color: var(--accent); }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px; }
+  .badge { border: 1px solid var(--border); color: var(--muted2); font-size: 8px; padding: 4px 10px; border-radius: 100px; letter-spacing: 0.05em; }
+  .hero-scan { display: flex; border: 1px solid var(--border); max-width: 480px; }
+  .hero-scan input { background: var(--surface); border: none; color: var(--text); font-size: 10px; padding: 12px 14px; flex: 1; outline: none; font-family: monospace; }
+  .hero-scan button { background: var(--accent); color: var(--bg); font-size: 9px; padding: 12px 18px; font-weight: 700; letter-spacing: 0.1em; border: none; cursor: pointer; white-space: nowrap; }
+  .hero-note { color: var(--muted); font-size: 7px; letter-spacing: 0.1em; margin-top: 8px; }
+  .watermark { position: absolute; right: -20px; top: 50%; transform: translateY(-50%); font-family: 'Syne', sans-serif; font-size: clamp(5rem, 14vw, 10rem); font-weight: 800; color: var(--text); opacity: 0.018; user-select: none; line-height: 1; }
+
+  /* ── MARQUEE ── */
+  .marquee { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 8px 0; overflow: hidden; white-space: nowrap; }
+  .marquee-inner { display: inline-block; animation: marquee 30s linear infinite; }
+  .marquee span { font-size: 8px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; padding: 0 16px; }
+  .marquee .dot { color: rgba(200,241,53,0.5); }
+  @media (prefers-color-scheme: light) { .marquee .dot { color: rgba(90,122,42,0.4); } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .stat { background: var(--surface); padding: 24px 20px; }
+  .stat-number { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .stat-label { color: var(--muted); font-size: 7px; letter-spacing: 0.1em; margin-top: 4px; line-height: 1.4; }
+
+  /* ── SECTION ── */
+  section { padding: 64px 32px; }
+
+  /* ── FEATURES ── */
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .feature-card { background: var(--surface); padding: 20px; position: relative; border-left: 3px solid transparent; transition: border-color 0.3s, background 0.3s; }
+  .feature-card:hover { background: var(--surface-raised); border-left-color: var(--accent); }
+  .feature-icon { font-size: 18px; margin-bottom: 10px; }
+  .feature-title { font-size: 10px; font-weight: 700; color: var(--text); letter-spacing: 0.05em; margin-bottom: 6px; }
+  .feature-desc { font-size: 8px; color: var(--muted2); line-height: 1.6; }
+  .feature-tag { display: inline-block; font-size: 7px; color: var(--accent); border: 1px solid var(--accent-muted); padding: 1px 6px; border-radius: 2px; margin-top: 8px; letter-spacing: 0.08em; }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .step { background: var(--surface); padding: 24px 20px; }
+  .step-num { color: var(--accent); font-size: 9px; letter-spacing: 0.15em; margin-bottom: 10px; }
+  .step-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .step-desc { font-size: 8px; color: var(--muted2); line-height: 1.6; }
+
+  /* ── SCAN GATE ── */
+  .gate-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: color-mix(in srgb, var(--bg) 95%, var(--accent));
+    border-top: 1px solid var(--accent);
+    padding: 12px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .gate-bar-left .title { color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: 0.05em; }
+  .gate-bar-left .sub { color: var(--muted); font-size: 7px; letter-spacing: 0.1em; margin-top: 2px; }
+  .gate-bar-actions { display: flex; gap: 10px; align-items: center; }
+  .btn-primary { background: var(--accent); color: var(--bg); font-size: 8px; padding: 8px 16px; font-weight: 700; letter-spacing: 0.1em; border: none; cursor: pointer; font-family: monospace; }
+  .btn-ghost { color: var(--muted2); font-size: 8px; letter-spacing: 0.1em; background: none; border: none; cursor: pointer; font-family: monospace; text-decoration: underline; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 32px; max-width: 380px; width: 90%;
+    position: relative;
+  }
+  .modal-tag { color: var(--accent); font-size: 8px; letter-spacing: 0.15em; margin-bottom: 12px; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+  .modal-title .accent { color: var(--accent); }
+  .modal-desc { font-size: 8px; color: var(--muted2); line-height: 1.6; margin-bottom: 20px; }
+  .modal-perks { list-style: none; margin-bottom: 20px; }
+  .modal-perks li { font-size: 8px; color: var(--muted2); padding: 4px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+  .modal-perks li::before { content: '→'; color: var(--accent); }
+  .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; font-family: monospace; }
+
+  /* ── FOOTER ── */
+  footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 32px; border-top: 1px solid var(--border);
+    padding-bottom: 80px;
+  }
+  .footer-copy { font-size: 9px; color: var(--muted); letter-spacing: 0.05em; }
+  .footer-status { display: flex; align-items: center; gap: 8px; font-size: 9px; color: var(--muted); }
+  .pulse-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.7); opacity: 0.4; } }
+
+  /* ── THEME NOTE ── */
+  .theme-toggle-demo {
+    position: fixed; top: 60px; right: 16px; background: var(--surface);
+    border: 1px solid var(--border); padding: 8px 12px; font-size: 8px;
+    color: var(--muted2); z-index: 50; letter-spacing: 0.08em;
+  }
+
+  /* ── SCAN RESULTS (minimal) ── */
+  .results-area { margin-top: 24px; border: 1px solid var(--border); }
+  .results-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .results-scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+  .score-cell { background: var(--surface); padding: 14px; text-align: center; }
+  .score-num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+  .score-lbl { font-size: 7px; color: var(--muted); letter-spacing: 0.1em; margin-top: 2px; }
+  .issue-row { padding: 8px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .badge-sev { font-size: 6px; padding: 2px 6px; letter-spacing: 0.06em; font-weight: 700; }
+  .sev-critical { background: #dc2626; color: #fff; }
+  .sev-serious  { background: #d97706; color: #fff; }
+  .sev-moderate { background: #3b82f6; color: #fff; }
+
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap');
+</style>
+</head>
+<body>
+
+<!-- Theme indicator -->
+<div class="theme-toggle-demo">⚙ Follows your system theme<br>(dark / light auto)</div>
+
+<!-- ── NAV ── -->
+<nav class="nav" aria-label="Main navigation">
+  <span class="nav-logo">ACCESSISCAN — 2026</span>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a href="/scan" class="nav-cta">SCAN FREE →</a>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero grid-bg">
+  <div class="watermark" aria-hidden="true">01</div>
+  <p class="hero-tag">// WCAG · ADA · SECTION 508 · EAA COMPLIANCE</p>
+  <h1 class="hero-headline">
+    Your website<br>is <span class="accent">excluding</span><br>people.
+  </h1>
+  <div class="hero-badges" role="list">
+    <span class="badge" role="listitem">Automated Scanning</span>
+    <span class="badge" role="listitem">Human Expert Review</span>
+    <span class="badge" role="listitem">Vision Simulation</span>
+    <span class="badge" role="listitem">VPAT Reports</span>
+    <span class="badge" role="listitem">AI Fix Suggestions</span>
+  </div>
+  <p style="font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:10px;">FREE SCAN — NO ACCOUNT NEEDED</p>
+  <div class="hero-scan" role="search">
+    <label for="hero-url" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Enter website URL to scan</label>
+    <input id="hero-url" type="url" placeholder="https://yourwebsite.com" />
+    <button type="button">SCAN NOW →</button>
+  </div>
+  <p class="hero-note">↳ 1 FREE SCAN · FULL RESULTS · NO CREDIT CARD</p>
+</div>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee" aria-hidden="true">
+  <span class="marquee-inner">
+    <span>WCAG 2.1 AA</span><span class="dot"> · </span>
+    <span>ADA Compliance</span><span class="dot"> · </span>
+    <span>Section 508</span><span class="dot"> · </span>
+    <span>EAA 2025</span><span class="dot"> · </span>
+    <span>Color Contrast</span><span class="dot"> · </span>
+    <span>Keyboard Navigation</span><span class="dot"> · </span>
+    <span>Screen Reader</span><span class="dot"> · </span>
+    <span>ARIA Roles</span><span class="dot"> · </span>
+    <span>Focus Management</span><span class="dot"> · </span>
+    <span>Vision Simulation</span><span class="dot"> · </span>
+    <span>VPAT Reports</span><span class="dot"> · </span>
+    <span>WCAG 2.1 AA</span><span class="dot"> · </span>
+    <span>ADA Compliance</span><span class="dot"> · </span>
+    <span>Section 508</span><span class="dot"> · </span>
+    <span>EAA 2025</span><span class="dot"> · </span>
+    <span>Color Contrast</span><span class="dot"> · </span>
+    <span>Keyboard Navigation</span><span class="dot"> · </span>
+    <span>Screen Reader</span><span class="dot"> · </span>
+    <span>ARIA Roles</span><span class="dot"> · </span>
+    <span>Focus Management</span><span class="dot"> · </span>
+    <span>Vision Simulation</span><span class="dot"> · </span>
+    <span>VPAT Reports</span><span class="dot"> · </span>
+  </span>
+</div>
+
+<!-- ── STATS ── -->
+<section aria-labelledby="stats-label" style="padding:0;margin:32px;">
+  <div class="section-label"><span id="stats-label">00 — By the numbers</span></div>
+  <div class="stats" role="list">
+    <div class="stat" role="listitem">
+      <div class="stat-number" aria-label="98 percent">98%</div>
+      <div class="stat-label">of websites fail basic accessibility checks</div>
+    </div>
+    <div class="stat" role="listitem">
+      <div class="stat-number">€75K</div>
+      <div class="stat-label">max fine under the European Accessibility Act</div>
+    </div>
+    <div class="stat" role="listitem">
+      <div class="stat-number">1 in 6</div>
+      <div class="stat-label">people worldwide live with a disability</div>
+    </div>
+    <div class="stat" role="listitem">
+      <div class="stat-number">$13B</div>
+      <div class="stat-label">accessibility services market by 2027</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MARQUEE 2 ── -->
+<div class="marquee" aria-hidden="true" style="margin-bottom:0;">
+  <span class="marquee-inner" style="animation-direction:reverse;">
+    <span>WCAG 2.1 AA</span><span class="dot"> · </span>
+    <span>ADA Compliance</span><span class="dot"> · </span>
+    <span>Section 508</span><span class="dot"> · </span>
+    <span>EAA 2025</span><span class="dot"> · </span>
+    <span>Color Contrast</span><span class="dot"> · </span>
+    <span>Keyboard Navigation</span><span class="dot"> · </span>
+    <span>ARIA Roles</span><span class="dot"> · </span>
+    <span>Focus Management</span><span class="dot"> · </span>
+    <span>Vision Simulation</span><span class="dot"> · </span>
+    <span>WCAG 2.1 AA</span><span class="dot"> · </span>
+    <span>ADA Compliance</span><span class="dot"> · </span>
+    <span>Section 508</span><span class="dot"> · </span>
+    <span>EAA 2025</span><span class="dot"> · </span>
+    <span>Color Contrast</span><span class="dot"> · </span>
+    <span>Keyboard Navigation</span><span class="dot"> · </span>
+    <span>ARIA Roles</span><span class="dot"> · </span>
+    <span>Focus Management</span><span class="dot"> · </span>
+    <span>Vision Simulation</span><span class="dot"> · </span>
+  </span>
+</div>
+
+<!-- ── FEATURES ── -->
+<section id="features" aria-labelledby="feat-label" style="padding:48px 32px;">
+  <div class="section-label"><span id="feat-label">01 — Features</span></div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">◈</div>
+      <div class="feature-title">AUTOMATED SCANNING</div>
+      <div class="feature-desc">axe-core engine checks WCAG 2.1 AA, ADA, Section 508, and EAA standards across every page.</div>
+      <span class="feature-tag">FREE TIER</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">⬡</div>
+      <div class="feature-title">HUMAN EXPERT REVIEW</div>
+      <div class="feature-desc">Certified accessibility specialists review issues that automation cannot fully assess.</div>
+      <span class="feature-tag">PRO+</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">◎</div>
+      <div class="feature-title">VISION SIMULATION</div>
+      <div class="feature-desc">Preview your site through 8 color blindness and low vision modes. See what users see.</div>
+      <span class="feature-tag">PRO+</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">△</div>
+      <div class="feature-title">AI FIX SUGGESTIONS</div>
+      <div class="feature-desc">Every issue includes a code-level fix suggestion with WCAG criterion reference.</div>
+      <span class="feature-tag">ALL PLANS</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">⬟</div>
+      <div class="feature-title">VPAT REPORTS</div>
+      <div class="feature-desc">Generate Voluntary Product Accessibility Templates for procurement and compliance documentation.</div>
+      <span class="feature-tag">BUSINESS+</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" aria-hidden="true">✦</div>
+      <div class="feature-title">UNIVERSAL DESIGN AUDIT</div>
+      <div class="feature-desc">Beyond WCAG — evaluate against all 7 principles of Universal Design for broader inclusion.</div>
+      <span class="feature-tag">PRO+</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how" aria-labelledby="how-label" style="padding:48px 32px;">
+  <div class="section-label"><span id="how-label">02 — How it works</span></div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01 —</div>
+      <div class="step-title">Scan</div>
+      <div class="step-desc">Enter any URL. Our engine runs axe-core + Puppeteer across your pages, checking against WCAG, ADA, Section 508, and EAA in seconds. No account needed for your first scan.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02 —</div>
+      <div class="step-title">Review</div>
+      <div class="step-desc">See a full issue breakdown with severity levels, element selectors, and which standard each violation breaks. Flag issues for human expert review.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03 —</div>
+      <div class="step-title">Fix & Report</div>
+      <div class="step-desc">Apply AI-generated code fixes, track remediation progress, and export audit-ready compliance reports for your legal and procurement teams.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SAMPLE SCAN RESULTS PREVIEW ── -->
+<section aria-labelledby="demo-label" style="padding:48px 32px;">
+  <div class="section-label"><span id="demo-label">03 — What you'll see</span></div>
+  <p style="font-size:8px;color:var(--muted2);margin-bottom:16px;letter-spacing:0.06em;">A real scan result — no signup needed to see this level of detail.</p>
+  <div class="results-area">
+    <div class="results-header">
+      <span style="color:var(--accent);font-size:8px;letter-spacing:0.12em;">// SCAN COMPLETE</span>
+      <span style="color:var(--muted);font-size:8px;">example.com · 5 pages · 4.2s</span>
+    </div>
+    <div class="results-scores">
+      <div class="score-cell"><div class="score-num" style="color:var(--amber);">72</div><div class="score-lbl">OVERALL SCORE</div></div>
+      <div class="score-cell"><div class="score-num" style="color:var(--red);">14</div><div class="score-lbl">ISSUES FOUND</div></div>
+      <div class="score-cell"><div class="score-num" style="color:var(--red);">3</div><div class="score-lbl">CRITICAL</div></div>
+    </div>
+    <div class="issue-row">
+      <span class="badge-sev sev-critical">CRITICAL</span>
+      <span style="font-size:8px;color:var(--muted2);">Images missing alt text — 7 instances · WCAG 1.1.1</span>
+    </div>
+    <div class="issue-row">
+      <span class="badge-sev sev-serious">SERIOUS</span>
+      <span style="font-size:8px;color:var(--muted2);">Color contrast ratio 2.3:1 fails 4.5:1 minimum · WCAG 1.4.3</span>
+    </div>
+    <div class="issue-row">
+      <span class="badge-sev sev-moderate">MODERATE</span>
+      <span style="font-size:8px;color:var(--muted2);">Form inputs missing associated labels · WCAG 1.3.1</span>
+    </div>
+    <div style="padding:10px 14px;text-align:center;border-top:1px solid var(--border);">
+      <a href="/scan" style="color:var(--accent);font-size:8px;letter-spacing:0.1em;text-decoration:none;">SCAN YOUR WEBSITE FREE → NO ACCOUNT NEEDED</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <span class="footer-copy">© 2026 AccessiScan. Building a more inclusive web.</span>
+  <div class="footer-status">
+    <div class="pulse-dot" aria-hidden="true"></div>
+    <span>All systems operational</span>
+  </div>
+</footer>
+
+<!-- ── STICKY GATE BAR (shown after scan completes) ── -->
+<div class="gate-bar" role="complementary" aria-label="Sign up prompt">
+  <div class="gate-bar-left">
+    <div class="title">Save your results & scan more sites</div>
+    <div class="sub">FREE ACCOUNT · NO CREDIT CARD · TAKES 30 SECONDS</div>
+  </div>
+  <div class="gate-bar-actions">
+    <button class="btn-primary" onclick="document.getElementById('modal').style.display='flex'">CREATE FREE ACCOUNT →</button>
+    <button class="btn-ghost">Log in</button>
+  </div>
+</div>
+
+<!-- ── SECOND-URL MODAL ── -->
+<div id="modal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal').style.display='none'" aria-label="Close">✕</button>
+    <div class="modal-tag">// FREE SCAN USED</div>
+    <h2 class="modal-title" id="modal-title">You've found <span class="accent">real issues.</span></h2>
+    <p class="modal-desc">Your free scan is complete. Create a free account to scan more sites, save this report, and start fixing issues with AI suggestions.</p>
+    <ul class="modal-perks" aria-label="Account benefits">
+      <li>Scan up to 3 sites per month</li>
+      <li>Save & share scan reports</li>
+      <li>AI-generated code fix suggestions</li>
+      <li>Track remediation progress</li>
+      <li>Vision simulation (8 modes)</li>
+    </ul>
+    <button class="btn-primary" style="width:100%;justify-content:center;">CREATE FREE ACCOUNT →</button>
+    <p style="text-align:center;margin-top:10px;font-size:7px;color:var(--muted);">Already have an account? <a href="/login" style="color:var(--accent);">Log in</a></p>
+  </div>
+</div>
+
+<script>
+// Simulate: clicking "SCAN NOW" shows modal (demo only)
+document.querySelector('.hero-scan button').addEventListener('click', function() {
+  document.getElementById('modal').style.display = 'flex';
+});
+</script>
+
+</body>
+</html>
