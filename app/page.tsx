@@ -3,6 +3,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import type { Metadata } from "next";
+import {
+  Search,
+  Eye,
+  Users,
+  Zap,
+  FileText,
+  Globe,
+  Check,
+  Shield,
+  Crown,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "AccessiScan — Know exactly where your site fails accessibility",
@@ -58,7 +69,7 @@ export default async function HomePage() {
             {[
               { href: "#features", label: "Features" },
               { href: "#how-it-works", label: "How it works" },
-              { href: "/pricing", label: "Pricing" },
+              { href: "#pricing", label: "Pricing" },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -113,12 +124,7 @@ export default async function HomePage() {
             position: "relative",
           }}
         >
-          {/* Radial glow behind dashboard preview */}
-          <div aria-hidden="true" style={{
-            position: "absolute", right: -80, top: "50%", transform: "translateY(-50%)",
-            width: 600, height: 600, pointerEvents: "none",
-            background: "radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 70%)",
-          }} />
+
 
           {/* Left: copy */}
           <div style={{ position: "relative", zIndex: 1 }}>
@@ -185,7 +191,7 @@ export default async function HomePage() {
             >
               {["No account needed", "Full results instantly", "1 free scan per session"].map((item) => (
                 <li key={item} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span aria-hidden="true" style={{ color: "var(--success-lp)" }}>✓</span>
+                  <Check size={14} aria-hidden="true" style={{ color: "var(--success-lp)", flexShrink: 0 }} />
                   {item}
                 </li>
               ))}
@@ -351,12 +357,12 @@ export default async function HomePage() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "var(--border-1)", border: "1px solid var(--border-1)", borderRadius: 12, overflow: "hidden" }}>
             {[
-              { icon: "🔍", title: "Automated scanning",    desc: "axe-core engine checks WCAG 2.1 AA, ADA, Section 508, and EAA 2025 across every page — in seconds.",                                      tier: "Free tier" },
-              { icon: "👁️", title: "Vision simulation",     desc: "Preview your site through 8 color blindness and low vision filters. See what 1 in 12 men experience on your pages.",                    tier: "Pro+" },
-              { icon: "🧑‍💻", title: "Human expert review",   desc: "Certified specialists review what automation misses — keyboard flows, cognitive load, ARIA context, focus order.",                      tier: "Pro+" },
-              { icon: "⚡", title: "AI fix suggestions",     desc: "Every issue includes a ready-to-paste code fix with the exact WCAG criterion and implementation notes.",                                 tier: "All plans" },
-              { icon: "📄", title: "VPAT reports",           desc: "Generate audit-ready Voluntary Product Accessibility Templates for legal, procurement, and enterprise compliance.",                      tier: "Business+" },
-              { icon: "🌐", title: "Universal Design audit", desc: "Go beyond WCAG. Evaluate against all 7 Universal Design principles for deeper, more inclusive coverage.",                               tier: "Pro+" },
+              { icon: <Search size={20} />, title: "Automated scanning",    desc: "axe-core engine checks WCAG 2.1 AA, ADA, Section 508, and EAA 2025 across every page — in seconds.",                                      tier: "Free tier" },
+              { icon: <Eye size={20} />, title: "Vision simulation",     desc: "Preview your site through 8 color blindness and low vision filters. See what 1 in 12 men experience on your pages.",                    tier: "Pro+" },
+              { icon: <Users size={20} />, title: "Human expert review",   desc: "Certified specialists review what automation misses — keyboard flows, cognitive load, ARIA context, focus order.",                      tier: "Pro+" },
+              { icon: <Zap size={20} />, title: "AI fix suggestions",     desc: "Every issue includes a ready-to-paste code fix with the exact WCAG criterion and implementation notes.",                                 tier: "All plans" },
+              { icon: <FileText size={20} />, title: "VPAT reports",           desc: "Generate audit-ready Voluntary Product Accessibility Templates for legal, procurement, and enterprise compliance.",                      tier: "Business+" },
+              { icon: <Globe size={20} />, title: "Universal Design audit", desc: "Go beyond WCAG. Evaluate against all 7 Universal Design principles for deeper, more inclusive coverage.",                               tier: "Pro+" },
             ].map(({ icon, title, desc, tier }) => (
               <div
                 key={title}
@@ -369,7 +375,7 @@ export default async function HomePage() {
                     width: 42, height: 42, background: "var(--brand-lp-subtle)",
                     border: "1px solid var(--brand-lp-border)", borderRadius: 10,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "1.125rem", marginBottom: 16,
+                    color: "var(--brand-lp)", marginBottom: 16,
                   }}
                 >{icon}</div>
                 <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text-lp-1)", marginBottom: 8 }}>{title}</h3>
@@ -420,6 +426,101 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* ── PRICING ── */}
+        <section
+          id="pricing"
+          aria-labelledby="pricing-heading"
+          style={{ padding: "72px 40px", maxWidth: 1100, margin: "0 auto" }}
+        >
+          <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--brand-lp)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Pricing</p>
+          <h2 id="pricing-heading" style={{ fontSize: "clamp(1.5rem, 2.8vw, 2rem)", fontWeight: 700, color: "var(--text-lp-1)", letterSpacing: "-0.01em", lineHeight: 1.25, marginBottom: 12 }}>
+            Simple, transparent pricing
+          </h2>
+          <p style={{ fontSize: "1rem", color: "var(--text-lp-3)", maxWidth: 500, lineHeight: 1.7, marginBottom: 40 }}>
+            Start free. Upgrade when you need human expert reviews, vision simulations, and compliance reports.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
+            {[
+              {
+                name: "Free", price: "$0", period: "", desc: "Try AccessiScan on one site",
+                icon: <Zap size={18} />, cta: "Get Started", ctaHref: "/signup", ctaStyle: "ghost" as const,
+                features: ["1 website", "5 pages per scan", "3 scans per month", "WCAG 2.1 AA checks", "Basic issue reports"],
+              },
+              {
+                name: "Pro", price: "$49", period: "/mo", desc: "For freelancers and small teams",
+                icon: <Shield size={18} />, cta: "Start 14-Day Trial", ctaHref: "/signup", ctaStyle: "primary" as const, popular: true,
+                features: ["5 websites", "50 pages per scan", "30 scans per month", "Human expert review", "Vision simulations"],
+              },
+              {
+                name: "Business", price: "$149", period: "/mo", desc: "For agencies and enterprise compliance",
+                icon: <Crown size={18} />, cta: "Start 14-Day Trial", ctaHref: "/signup", ctaStyle: "primary" as const,
+                features: ["25 websites", "200 pages per scan", "Unlimited scans", "VPAT + audit reports", "Dedicated support"],
+              },
+            ].map((plan) => (
+              <div
+                key={plan.name}
+                style={{
+                  background: "var(--surface-1)",
+                  border: plan.popular ? "2px solid var(--brand-lp)" : "1px solid var(--border-1)",
+                  borderRadius: 12, padding: 28, position: "relative",
+                  display: "flex", flexDirection: "column",
+                }}
+              >
+                {plan.popular && (
+                  <span style={{
+                    position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)",
+                    background: "var(--brand-lp)", color: "#fff",
+                    fontSize: "0.625rem", fontWeight: 700, padding: "4px 12px", borderRadius: 100,
+                    letterSpacing: "0.05em", textTransform: "uppercase",
+                  }}>Most Popular</span>
+                )}
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 8,
+                    background: plan.popular ? "var(--brand-lp)" : "var(--surface-2)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: plan.popular ? "#fff" : "var(--text-lp-3)",
+                  }}>{plan.icon}</div>
+                  <div>
+                    <div style={{ fontWeight: 700, color: "var(--text-lp-1)", fontSize: "1rem" }}>{plan.name}</div>
+                    <div style={{ fontSize: "0.6875rem", color: "var(--text-lp-3)" }}>{plan.desc}</div>
+                  </div>
+                </div>
+                <div style={{ marginBottom: 20 }}>
+                  <span style={{ fontSize: "2.25rem", fontWeight: 800, color: "var(--text-lp-1)", fontFamily: "monospace" }}>{plan.price}</span>
+                  {plan.period && <span style={{ fontSize: "0.875rem", color: "var(--text-lp-3)" }}>{plan.period}</span>}
+                </div>
+                <Link
+                  href={plan.ctaHref}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: "12px 20px", borderRadius: 8, textDecoration: "none",
+                    fontSize: "0.875rem", fontWeight: 600, minHeight: 44, marginBottom: 20,
+                    ...(plan.ctaStyle === "primary"
+                      ? { background: "var(--brand-lp)", color: "#fff" }
+                      : { background: "transparent", color: "var(--text-lp-2)", border: "1px solid var(--border-2)" }),
+                  }}
+                >{plan.cta}</Link>
+                <ul style={{ listStyle: "none", padding: 0, flex: 1 }}>
+                  {plan.features.map((f) => (
+                    <li key={f} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.8125rem", color: "var(--text-lp-3)", padding: "6px 0" }}>
+                      <Check size={14} aria-hidden="true" style={{ color: "var(--success-lp)", flexShrink: 0 }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <p style={{ textAlign: "center", marginTop: 28, fontSize: "0.875rem", color: "var(--text-lp-3)" }}>
+            Need enterprise compliance?{" "}
+            <a href="mailto:hello@accessiscan.com" style={{ color: "var(--brand-lp)", textDecoration: "none" }}>Contact sales</a>
+            {" · "}
+            <Link href="/pricing" style={{ color: "var(--brand-lp)", textDecoration: "none" }}>View full plan comparison</Link>
+          </p>
+        </section>
+
         {/* ── FINAL CTA ── */}
         <section aria-labelledby="cta-heading" style={{ padding: "72px 40px", textAlign: "center", maxWidth: 600, margin: "0 auto" }}>
           <h2 id="cta-heading" style={{ fontSize: "clamp(1.5rem, 2.8vw, 2rem)", fontWeight: 700, color: "var(--text-lp-1)", marginBottom: 16 }}>
@@ -455,20 +556,10 @@ export default async function HomePage() {
           <Link href="/pricing" style={{ color: "var(--text-lp-3)", textDecoration: "none" }}>Pricing</Link>
           <a href="mailto:hello@accessiscan.com" style={{ color: "var(--text-lp-3)", textDecoration: "none" }}>Contact</a>
         </nav>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span
-            aria-hidden="true"
-            style={{
-              width: 8, height: 8, background: "var(--success-lp)", borderRadius: "50%",
-              animation: "pulse 2s ease-in-out infinite",
-            }}
-          />
-          <span>All systems operational</span>
-        </div>
+        <span>All systems operational</span>
       </footer>
 
       <style>{`
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.75)} }
         @media (prefers-reduced-motion: reduce) {
           * { animation: none !important; transition-duration: 0.01ms !important; }
         }

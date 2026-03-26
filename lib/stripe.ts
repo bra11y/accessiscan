@@ -21,10 +21,10 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 // ─── Price IDs (create these in Stripe Dashboard) ───
 // For MVP: create products manually at dashboard.stripe.com
 export const PRICE_IDS = {
-  PRO_MONTHLY: process.env.STRIPE_PRICE_PRO_MONTHLY || "price_pro_monthly",
-  PRO_YEARLY: process.env.STRIPE_PRICE_PRO_YEARLY || "price_pro_yearly",
-  BUSINESS_MONTHLY: process.env.STRIPE_PRICE_BIZ_MONTHLY || "price_biz_monthly",
-  BUSINESS_YEARLY: process.env.STRIPE_PRICE_BIZ_YEARLY || "price_biz_yearly",
+  PRO_MONTHLY: process.env.STRIPE_PRO_MONTHLY_PRICE_ID || "price_pro_monthly",
+  PRO_YEARLY: process.env.STRIPE_PRO_YEARLY_PRICE_ID || "price_pro_yearly",
+  BUSINESS_MONTHLY: process.env.STRIPE_BUSINESS_MONTHLY_PRICE_ID || "price_biz_monthly",
+  BUSINESS_YEARLY: process.env.STRIPE_BUSINESS_YEARLY_PRICE_ID || "price_biz_yearly",
 };
 
 // ─── Plan to Price mapping ───

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible, JetBrains_Mono, Outfit } from "next/font/google";
+import Providers from "./providers";
 import "./globals.css";
 
 const fontBody = Atkinson_Hyperlegible({
@@ -55,8 +56,9 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
 }
+

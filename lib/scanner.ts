@@ -18,6 +18,7 @@
  */
 
 import { db } from "@/lib/db";
+import { sendScanNotifications } from "@/lib/notifications";
 import type { IssueSeverity, Standard } from "@prisma/client";
 
 // ─── Types ───
@@ -238,6 +239,24 @@ export async function runAccessibilityScan(
         completedAt: new Date(),
       },
     });
+
+    // ─── Step 5: Send notifications (fire-and-forget) ───
+    const siteWithUser = await db.site.findUnique({
+      where: { id: siteId },
+      select: { userId: true, url: true },
+    });
+    if (siteWithUser) {
+      sendScanNotifications(siteWithUser.userId, {
+        scanId,
+        siteUrl: siteWithUser.url,
+        score: overallScore,
+        wcagScore,
+        adaScore,
+        ariaScore,
+        issueCount: allIssues.length,
+        pagesCount: pages.length,
+      }).catch((err) => console.error("Notification error:", err));
+    }
 
     return {
       scanId,

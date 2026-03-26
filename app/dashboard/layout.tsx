@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronLeft,
   Layers,
+  Bell,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
   { href: "/reviews", label: "Human Review", icon: Users },
   { href: "/compliance", label: "Compliance", icon: ShieldCheck },
   { href: "/dashboard/universal-design", label: "UD Audit", icon: Layers },
+  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
 ];
 
 export default function DashboardLayout({
