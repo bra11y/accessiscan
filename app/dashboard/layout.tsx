@@ -20,11 +20,11 @@ import {
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
-  { href: "/scan", label: "Scan", icon: ScanLine },
-  { href: "/issues", label: "Issues", icon: AlertTriangle },
-  { href: "/vision", label: "Vision Sim", icon: Eye },
-  { href: "/reviews", label: "Human Review", icon: Users },
-  { href: "/compliance", label: "Compliance", icon: ShieldCheck },
+  { href: "/dashboard/scan", label: "Scan", icon: ScanLine },
+  { href: "/dashboard/issues", label: "Issues", icon: AlertTriangle },
+  { href: "/dashboard/vision", label: "Vision Sim", icon: Eye },
+  { href: "/dashboard/reviews", label: "Human Review", icon: Users },
+  { href: "/dashboard/compliance", label: "Compliance", icon: ShieldCheck },
   { href: "/dashboard/universal-design", label: "UD Audit", icon: Layers },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
 ];

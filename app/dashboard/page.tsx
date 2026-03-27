@@ -67,7 +67,7 @@ export default function DashboardPage() {
             Issues flagged for human review will appear in your review queue.
           </p>
           <Link
-            href="/scan"
+            href="/dashboard/scan"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold text-sm hover:from-brand-600 hover:to-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 transition-all min-touch"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
