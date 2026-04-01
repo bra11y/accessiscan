@@ -45,6 +45,13 @@ const SEVERITY_CONFIG: Record<
   MINOR: { bg: "bg-slate-800", text: "text-slate-400", border: "border-slate-700", dot: "bg-slate-500" },
 };
 
+// ─── Speed Color Helper ───
+function speedColor(ms: number, thresholds: [number, number]): string {
+  if (ms < thresholds[0]) return "#4ade80"; // green
+  if (ms < thresholds[1]) return "#fbbf24"; // amber
+  return "#f87171"; // red
+}
+
 // ─── Score Ring ───
 function ScoreRing({
   score,
@@ -471,6 +478,40 @@ export default function ScanPage() {
               </div>
             </div>
           </div>
+
+          {/* Performance Card */}
+          {(result?.ttfb != null || result?.domReady != null || result?.fullLoad != null) && (
+            <div
+              className="bg-surface-raised border rounded-2xl p-5 backdrop-blur-sm mb-5"
+              style={{ borderColor: "var(--color-border)" }}
+            >
+              <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">
+                Load Speed
+              </p>
+              <div className="space-y-2">
+                {[
+                  { label: "Time to First Byte", value: result.ttfb, thresholds: [200, 600] as [number, number] },
+                  { label: "DOM Ready", value: result.domReady, thresholds: [1500, 3000] as [number, number] },
+                  { label: "Full Load", value: result.fullLoad, thresholds: [3000, 6000] as [number, number] },
+                ].map(({ label, value, thresholds }) =>
+                  value != null ? (
+                    <div key={label} className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400">{label}</span>
+                      <span
+                        className="text-xs font-mono font-bold px-2 py-0.5 rounded"
+                        style={{
+                          color: speedColor(value, thresholds),
+                          background: speedColor(value, thresholds) + "22",
+                        }}
+                      >
+                        {value}ms
+                      </span>
+                    </div>
+                  ) : null
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Issues List */}
           <section
