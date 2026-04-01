@@ -638,7 +638,7 @@ export async function runUDScan(url: string, reportId?: string): Promise<UDRepor
   try {
     await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
   } catch (err) {
-    await browser.close();
+    await browser.close().catch(() => {});
     if (reportId) {
       await db.uDReport.update({
         where: { id: reportId },
@@ -689,7 +689,7 @@ export async function runUDScan(url: string, reportId?: string): Promise<UDRepor
     principleResults.push({ principle, results, score, passed, failed, manual });
   }
 
-  await browser.close();
+  await browser.close().catch(() => {});
 
   const allScores = principleResults.map((p) => p.score);
   const overallScore = Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length);
