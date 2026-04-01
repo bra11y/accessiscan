@@ -93,22 +93,60 @@ Scheduled scans and full UI redesign are explicitly out of scope.
 
 ---
 
-## Section 3 — Dashboard Features
+## Section 3 — Dashboard Features & Data Visualization
 
-### 3a. Last Scanned Date on Site Cards
+**Chart library:** Recharts (`recharts`) — lightweight, composable, fully styleable to match Apple aesthetic.
+Install: `npm install recharts`
 
-- Dashboard scan list groups scans by site
+### 3a. Dashboard Card Grid
+
+Replace the current 4-stat hardcoded row with a rich card grid:
+
+| Card | Content |
+|------|---------|
+| **Overall Score** | Large number + color ring, delta vs last scan (↑ +4) |
+| **WCAG Score** | Score + mini sparkline of last 5 scans |
+| **ADA Score** | Score + mini sparkline |
+| **ARIA Score** | Score + mini sparkline |
+| **Load Speed** | TTFB / DOM Ready / Full Load — color-coded pills |
+| **Critical Issues** | Count + red badge, link to issues filtered by CRITICAL |
+| **Pages Scanned** | Count across all scans |
+| **Human Reviews** | Pending count + link to review queue |
+
+Cards use `backdrop-blur-sm bg-white/5 rounded-2xl` (Apple frosted glass), Recharts `Sparkline` for mini trend lines.
+
+### 3b. Score Trend Chart
+
+- Full-width `LineChart` (Recharts) below the card grid
+- X-axis: scan date, Y-axis: 0–100
+- Three lines: Overall (indigo), WCAG (green), ADA (amber)
+- Tooltip shows exact scores + date on hover
+- Only renders when user has ≥2 scans
+
+### 3c. Issue Breakdown Chart
+
+- `PieChart` (donut variant) — Critical / Serious / Moderate / Minor
+- Colors: red / amber / yellow / blue matching existing severity palette
+- Legend below with counts
+- Renders from most recent completed scan
+
+### 3d. Per-Standard Bar Chart
+
+- `BarChart` — WCAG / ADA / SECTION508 / ARIA scores side by side
+- Horizontal bars, color-coded by score (green/amber/red)
+- Renders from most recent completed scan
+
+### 3e. Last Scanned Date on Site Cards
+
+- Scans grouped by site in the Recent Scans list
 - Under each site name: `"Last scanned {relative time}"` using `date-fns/formatDistanceToNow`
-- Example: "Last scanned 2 days ago"
-- `date-fns` is already in `package.json` (unused) — no new dependency
+- `date-fns` already in `package.json` — no new dependency
 
-### 3b. Date Range Filter
+### 3f. Date Range Filter
 
-- Filter bar above the Recent Scans list on the dashboard
-- Two date inputs: "From" and "To"
-- Three quick-select presets rendered as pill buttons: "Last 7 days", "Last 30 days", "All time"
-- Filtering is client-side against the already-fetched scan array
-- State lives in component — no API changes needed
+- Filter bar above Recent Scans list
+- "From" / "To" date inputs + pill presets: "Last 7 days", "Last 30 days", "All time"
+- Client-side filtering — no API changes needed
 
 ---
 
@@ -154,7 +192,7 @@ Applied as we touch each file — not a separate pass:
 | `app/api/scan/route.ts` | Set plan limits to 999 |
 | `lib/scanner.ts` | Add `performance.timing` capture after page load |
 | `app/dashboard/universal-design/page.tsx` | Polling pattern, Tailwind refactor, overflow fix |
-| `app/dashboard/page.tsx` | Group by site, last scanned date, date range filter |
+| `app/dashboard/page.tsx` | Card grid, Recharts charts, site grouping, last scanned date, date range filter |
 | `app/dashboard/layout.tsx` | Theme switcher + Ko-fi link in sidebar footer |
 | `app/providers.tsx` | Add `ThemeProvider` |
 | `app/globals.css` | Add 4 `data-theme` CSS blocks + Apple polish tokens |
