@@ -42,20 +42,13 @@ export async function POST(request: NextRequest) {
     const userId = (session.user as any).id;
     const plan = (session.user as any).plan;
 
-    const siteCount = await db.site.count({ where: { userId } });
     const planLimits: Record<string, number> = {
-      FREE: 1, PRO: 5, BUSINESS: 25, ENTERPRISE: 999,
+      FREE: 999, PRO: 999, BUSINESS: 999, ENTERPRISE: 999,
     };
 
     let site = await db.site.findFirst({ where: { url, userId } });
 
     if (!site) {
-      if (siteCount >= (planLimits[plan] ?? 1)) {
-        return NextResponse.json(
-          { error: `Your ${plan} plan allows ${planLimits[plan]} site(s). Upgrade to scan more sites.` },
-          { status: 403 }
-        );
-      }
       site = await db.site.create({
         data: { url, userId, name: new URL(url).hostname },
       });
