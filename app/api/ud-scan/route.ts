@@ -1,12 +1,10 @@
-// ─── API Route: POST /api/ud-scan ─────────────────────────────────────────────
-// Drop into: app/api/ud-scan/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { runUDScan } from "@/lib/ud-scanner";
 import { db } from "@/lib/db";
 
+// POST /api/ud-scan — Create a pending report and start background scan
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -21,7 +19,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 });
     }
 
-    // Validate URL
     let parsedUrl: URL;
     try {
       parsedUrl = new URL(url.startsWith("http") ? url : `https://${url}`);
@@ -29,38 +26,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
     }
 
-    // Run the scan
-    const report = await runUDScan(parsedUrl.toString());
-
-    // Optionally store the report in the database
-    // You can attach it to an existing site record or store standalone
-    // Uncomment and adapt to your schema:
-    /*
     const userId = (session.user as any).id;
-    await db.udReport.create({
+
+    const report = await db.uDReport.create({
       data: {
-        url: report.url,
-        overallScore: report.overallScore,
-        scannedAt: new Date(report.scannedAt),
         userId,
-        data: JSON.stringify(report),
+        url: parsedUrl.toString(),
+        status: "PENDING",
       },
     });
-    */
 
-    return NextResponse.json({ report }, { status: 200 });
+    // Fire and forget — do NOT await
+    runUDScan(parsedUrl.toString(), report.id).catch((err) => {
+      console.error("UD scan failed:", err);
+    });
+
+    return NextResponse.json({ reportId: report.id, status: "PENDING" }, { status: 200 });
   } catch (error: any) {
-    console.error("UD scan error:", error);
-    return NextResponse.json(
-      { error: error.message || "Scan failed. Check the URL and try again." },
-      { status: 500 }
-    );
+    console.error("UD scan POST error:", error);
+    return NextResponse.json({ error: error.message || "Failed to start scan" }, { status: 500 });
   }
 }
 
-// GET /api/ud-scan?url=... — lightweight check without full scan
+// GET /api/ud-scan?reportId=xxx — Poll for status and results
 export async function GET(request: NextRequest) {
-  const url = request.nextUrl.searchParams.get("url");
-  if (!url) return NextResponse.json({ error: "url param required" }, { status: 400 });
-  return NextResponse.json({ message: "Use POST to run a full UD scan", url });
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
+    const reportId = request.nextUrl.searchParams.get("reportId");
+    if (!reportId) {
+      return NextResponse.json({ error: "reportId param required" }, { status: 400 });
+    }
+
+    const report = await db.uDReport.findUnique({ where: { id: reportId } });
+    if (!report) {
+      return NextResponse.json({ error: "Report not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      reportId: report.id,
+      status: report.status,
+      overallScore: report.overallScore,
+      report: report.status === "COMPLETED" ? report.data : null,
+    });
+  } catch (error: any) {
+    console.error("UD scan GET error:", error);
+    return NextResponse.json({ error: "Failed to fetch report" }, { status: 500 });
+  }
 }
