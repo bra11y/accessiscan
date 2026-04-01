@@ -32,6 +32,7 @@ model User {
   sites                Site[]
   reviews              Review[]
   notificationSetting  NotificationSetting?
+  udReports            UDReport[]
 
   @@map("users")
 }
@@ -119,6 +120,9 @@ model Scan {
   issueCount  Int        @default(0)
   fixedCount  Int        @default(0)
   duration    Int?       // scan duration in seconds
+  ttfb        Int?       // time to first byte (ms)
+  domReady    Int?       // DOMContentLoaded (ms)
+  fullLoad    Int?       // full page load (ms)
   startedAt   DateTime?
   completedAt DateTime?
   createdAt   DateTime   @default(now())
@@ -235,4 +239,25 @@ enum Standard {
   SECTION508
   ARIA
   EAA
+}
+
+enum UDScanStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model UDReport {
+  id           String       @id @default(cuid())
+  userId       String
+  url          String
+  overallScore Int          @default(0)
+  data         Json?
+  status       UDScanStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ud_reports")
 }
