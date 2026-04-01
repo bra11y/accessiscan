@@ -6,6 +6,7 @@
 import { useState, useCallback } from "react";
 import type { UDReport, UDPrincipleResult, UDCheckResult, Severity, CheckStatus } from "@/types/ud";
 import { UD_PRINCIPLES } from "@/lib/ud-principles";
+import { useUDScanProgress } from "@/hooks/use-api";
 
 // ─── Colour helpers ───────────────────────────────────────────────────────────
 const SEVERITY_COLORS: Record<Severity, { bg: string; text: string; label: string }> = {
@@ -352,70 +353,20 @@ function PrincipleCard({ pr }: { pr: UDPrincipleResult }) {
   );
 }
 
-// ─── Demo/placeholder report ──────────────────────────────────────────────────
-function buildDemoReport(url: string): UDReport {
-  const statuses: CheckStatus[] = ["pass", "fail", "manual", "pass", "fail", "manual"];
-  return {
-    url,
-    scannedAt: new Date().toISOString(),
-    overallScore: 62,
-    summary: { critical: 3, serious: 5, moderate: 4, minor: 1, totalIssues: 13 },
-    principleResults: UD_PRINCIPLES.map((principle, pi) => {
-      const results = principle.checks.map((check, ci) => ({
-        check,
-        status: statuses[(pi + ci) % statuses.length] as CheckStatus,
-        evidence:
-          statuses[(pi + ci) % statuses.length] === "fail"
-            ? "Automated check found issues on this page. See how-to-fix for remediation steps."
-            : statuses[(pi + ci) % statuses.length] === "manual"
-            ? "This check requires manual verification. See how-to-test for steps."
-            : undefined,
-        count:
-          statuses[(pi + ci) % statuses.length] === "fail"
-            ? Math.floor(Math.random() * 5) + 1
-            : undefined,
-      }));
-      const passed = results.filter((r) => r.status === "pass").length;
-      const failed = results.filter((r) => r.status === "fail").length;
-      const manual = results.filter((r) => r.status === "manual").length;
-      const score = Math.round((passed / results.length) * 100);
-      return { principle, results, score, passed, failed, manual };
-    }),
-  };
-}
-
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function UniversalDesignPage() {
   const [url, setUrl] = useState("");
-  const [scanning, setScanning] = useState(false);
-  const [phase, setPhase] = useState("");
-  const [report, setReport] = useState<UDReport | null>(null);
-  const [error, setError] = useState("");
+  const [reportId, setReportId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"results" | "summary">("results");
 
-  const SCAN_PHASES = [
-    "Loading page…",
-    "Checking equitable use…",
-    "Auditing flexibility…",
-    "Testing simplicity…",
-    "Scanning perceptible info…",
-    "Evaluating error tolerance…",
-    "Measuring physical effort…",
-    "Checking size & space…",
-    "Building report…",
-  ];
+  const { progress, status, report } = useUDScanProgress(reportId);
+  const scanning = status === "PENDING" || status === "RUNNING";
 
-  const startScan = useCallback(async () => {
+  const handleScan = useCallback(async () => {
     if (!url.trim()) return;
-    setScanning(true);
-    setError("");
-    setReport(null);
-
-    let i = 0;
-    const interval = setInterval(() => {
-      setPhase(SCAN_PHASES[i % SCAN_PHASES.length]);
-      i++;
-    }, 600);
+    setError(null);
+    setReportId(null);
 
     try {
       const res = await fetch("/api/ud-scan", {
@@ -424,15 +375,10 @@ export default function UniversalDesignPage() {
         body: JSON.stringify({ url: url.trim() }),
       });
       const data = await res.json();
-      clearInterval(interval);
-      if (!res.ok) throw new Error(data.error || "Scan failed");
-      setReport(data.report);
-    } catch (err: any) {
-      clearInterval(interval);
-      setReport(buildDemoReport(url));
-    } finally {
-      setScanning(false);
-      setPhase("");
+      if (!res.ok) throw new Error(data.error || "Failed to start scan");
+      setReportId(data.reportId);
+    } catch (e: any) {
+      setError(e.message);
     }
   }, [url]);
 
@@ -455,7 +401,7 @@ export default function UniversalDesignPage() {
     : "#64748b";
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-6xl mx-auto overflow-x-hidden">
       {/* ─── Header ─── */}
       <div className="mb-6">
         <div className="flex items-start justify-between flex-wrap gap-3">
@@ -509,7 +455,7 @@ export default function UniversalDesignPage() {
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && startScan()}
+            onKeyDown={(e) => e.key === "Enter" && handleScan()}
             placeholder="https://your-site.com"
             autoComplete="url"
             className="flex-1 px-4 py-2.5 rounded-lg bg-surface border text-slate-200 text-sm placeholder:text-slate-600"
@@ -517,7 +463,7 @@ export default function UniversalDesignPage() {
             aria-describedby={error ? "ud-error" : undefined}
           />
           <button
-            onClick={startScan}
+            onClick={handleScan}
             disabled={scanning || !url.trim()}
             className="px-6 py-2.5 rounded-lg bg-brand-600 text-white font-semibold text-sm hover:bg-brand-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
             aria-busy={scanning}
@@ -525,58 +471,48 @@ export default function UniversalDesignPage() {
             {scanning ? "Scanning…" : "Run UD Audit"}
           </button>
         </div>
-
-        {/* Scanning status */}
-        {scanning && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="flex items-center gap-3 mt-3"
-          >
-            <div className="flex gap-1" aria-hidden="true">
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="ud-pulse-dot"
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "#6366f1",
-                    animationDelay: `${i * 0.2}s`,
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-slate-400">{phase}</span>
-          </div>
-        )}
-
-        {error && (
-          <div
-            id="ud-error"
-            role="alert"
-            className="mt-3 px-3 py-2 rounded-lg bg-red-950/60 border border-red-900/50 text-sm text-red-400"
-          >
-            {error}
-          </div>
-        )}
       </div>
 
-      <style>{`
-        .ud-pulse-dot { animation: ud-pulse 1.2s infinite ease-in-out; }
-        @keyframes ud-pulse { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.2)} }
-        @media (prefers-reduced-motion: reduce) {
-          .ud-pulse-dot { animation: none; opacity: 0.7; }
-        }
-      `}</style>
+      {/* ─── Scanning progress ─── */}
+      {scanning && (
+        <div
+          className="bg-surface-raised border rounded-2xl p-8 text-center mb-6"
+          style={{ borderColor: "var(--color-border)" }}
+          role="status"
+          aria-live="polite"
+        >
+          <p className="text-sm text-slate-300 mb-4">
+            {status === "PENDING" ? "Starting Universal Design audit…" : "Scanning for UD compliance…"}
+          </p>
+          <div className="w-full bg-surface-overlay rounded-full h-2 overflow-hidden">
+            <div
+              className="h-2 rounded-full bg-brand-500 transition-all duration-500"
+              style={{ width: `${progress}%` }}
+              role="progressbar"
+              aria-valuenow={progress}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            />
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div
+          id="ud-error"
+          className="bg-red-950/50 border border-red-800 rounded-2xl p-4 text-sm text-red-300 mb-6"
+          role="alert"
+        >
+          {error}
+        </div>
+      )}
 
       {/* ─── Results ─── */}
       {report && (
-        <div>
+        <div className="overflow-y-auto space-y-4">
           {/* Summary row */}
           <div
-            className="bg-surface-raised border rounded-xl p-5 mb-6"
+            className="bg-surface-raised border rounded-xl p-5"
             style={{ borderColor: "var(--color-border)" }}
           >
             <div className="flex flex-wrap gap-6 items-center">
@@ -632,7 +568,7 @@ export default function UniversalDesignPage() {
           <div
             role="tablist"
             aria-label="Report view"
-            className="flex gap-1 mb-4"
+            className="flex gap-1"
           >
             {(["results", "summary"] as const).map((tab) => (
               <button
