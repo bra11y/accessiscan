@@ -558,8 +558,28 @@ function IssueRow({
 
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">Element</p>
-                  <code className="block px-3 py-2 bg-surface rounded-lg font-mono text-[11px] text-amber-400 border break-all" style={{ borderColor: "var(--color-border)" }}>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">
+                    {issue.ruleId === "image-alt" ? "Image missing alt text" : "Element"}
+                  </p>
+                  {issue.ruleId === "image-alt" && (() => {
+                    const srcMatch = (issue.htmlSnippet || "").match(/src=["']([^"']+)["']/);
+                    const src = srcMatch?.[1];
+                    return src ? (
+                      <div className="space-y-2">
+                        <div className="bg-surface rounded-lg border overflow-hidden" style={{ borderColor: "var(--color-border)" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={src}
+                            alt="Image missing alt text — shown for context"
+                            className="max-h-32 w-auto mx-auto block p-2"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-slate-500 font-mono break-all px-1">src: {src}</p>
+                      </div>
+                    ) : null;
+                  })()}
+                  <code className="block px-3 py-2 bg-surface rounded-lg font-mono text-[11px] text-amber-400 border break-all mt-1" style={{ borderColor: "var(--color-border)" }}>
                     {issue.htmlSnippet || issue.element}
                   </code>
                 </div>

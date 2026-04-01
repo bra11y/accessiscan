@@ -216,7 +216,7 @@ export default function ScanPage() {
   const realProgress = viewState === "complete" ? 100 : Math.max(progress, (simulatedPhase / SCAN_PHASES.length) * 95);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-8 max-w-6xl mx-auto">
       {/* Live region for screen readers */}
       <div
         ref={liveRef}
