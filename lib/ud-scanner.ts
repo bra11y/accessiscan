@@ -16,6 +16,7 @@ import type {
   UDCheck,
 } from "@/types/ud";
 import { UD_PRINCIPLES } from "@/lib/ud-principles";
+import { db } from "@/lib/db";
 
 // ─── Individual check runners ─────────────────────────────────────────────────
 // Each function receives the Puppeteer page and returns a partial UDCheckResult.
@@ -614,7 +615,7 @@ const CHECK_RUNNERS: Record<string, CheckRunner> = {
 
 // ─── Main scanner function ────────────────────────────────────────────────────
 
-export async function runUDScan(url: string): Promise<UDReport> {
+export async function runUDScan(url: string, reportId?: string): Promise<UDReport> {
   // Dynamic import to avoid breaking builds where Puppeteer isn't installed
   const puppeteer = await import("puppeteer").catch(() => null);
   if (!puppeteer) throw new Error("Puppeteer not available. Run: npm install puppeteer");
@@ -627,13 +628,27 @@ export async function runUDScan(url: string): Promise<UDReport> {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 800 });
 
+  if (reportId) {
+    await db.uDReport.update({
+      where: { id: reportId },
+      data: { status: "RUNNING" },
+    }).catch(() => {});
+  }
+
   try {
     await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
   } catch (err) {
     await browser.close();
+    if (reportId) {
+      await db.uDReport.update({
+        where: { id: reportId },
+        data: { status: "FAILED" },
+      }).catch(() => {});
+    }
     throw new Error(`Could not load URL: ${url}`);
   }
 
+  try {
   const principleResults: UDPrincipleResult[] = [];
   let totalCritical = 0, totalSerious = 0, totalModerate = 0, totalMinor = 0;
 
@@ -679,7 +694,7 @@ export async function runUDScan(url: string): Promise<UDReport> {
   const allScores = principleResults.map((p) => p.score);
   const overallScore = Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length);
 
-  return {
+  const report: UDReport = {
     url,
     scannedAt: new Date().toISOString(),
     overallScore,
@@ -692,4 +707,23 @@ export async function runUDScan(url: string): Promise<UDReport> {
       totalIssues: totalCritical + totalSerious + totalModerate + totalMinor,
     },
   };
+
+  if (reportId) {
+    await db.uDReport.update({
+      where: { id: reportId },
+      data: { status: "COMPLETED", overallScore, data: report as any },
+    }).catch(() => {});
+  }
+
+  return report;
+  } catch (err) {
+    await browser.close().catch(() => {});
+    if (reportId) {
+      await db.uDReport.update({
+        where: { id: reportId },
+        data: { status: "FAILED" },
+      }).catch(() => {});
+    }
+    throw err;
+  }
 }
