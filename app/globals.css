@@ -28,6 +28,48 @@
   --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-brand);
 }
 
+/* ─── Theme: High Contrast (WCAG AAA) ─── */
+[data-theme="high-contrast"] {
+  --color-surface: #000000;
+  --color-surface-raised: #0a0a0a;
+  --color-surface-overlay: #1a1a1a;
+  --color-border: #ffffff;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #ffffff;
+  --color-text-muted: #cccccc;
+  --color-brand: #fbbf24;
+  --color-brand-light: #fde68a;
+}
+
+/* ─── Theme: Light (Apple Notes aesthetic) ─── */
+[data-theme="light"] {
+  --color-surface: #f5f5f7;
+  --color-surface-raised: #ffffff;
+  --color-surface-overlay: #e8e8ed;
+  --color-border: #d2d2d7;
+  --color-text-primary: #1d1d1f;
+  --color-text-secondary: #424245;
+  --color-text-muted: #6e6e73;
+  --color-brand: #6366F1;
+  --color-brand-light: #818cf8;
+}
+
+/* ─── Theme: Reduced Motion ─── */
+[data-theme="reduced"] * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* ─── Apple Polish (all themes) ─── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.025em;
+}
+
 /* ─── Base Styles ─── */
 
 * {
