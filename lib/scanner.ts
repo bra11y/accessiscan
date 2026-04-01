@@ -170,7 +170,7 @@ export async function runAccessibilityScan(
     // In production, use Puppeteer. For MVP, we use a simplified approach.
     // The scanning happens server-side via axe-core + jsdom or Puppeteer.
 
-    const pages = await crawlAndScan(site.url);
+    const { pages, loadMetrics } = await crawlAndScan(site.url);
 
     // ─── Step 2: Store results in database ───
     let allIssues: IssueResult[] = [];
@@ -237,6 +237,9 @@ export async function runAccessibilityScan(
         pagesCount: pages.length,
         issueCount: allIssues.length,
         completedAt: new Date(),
+        ttfb: loadMetrics?.ttfb ?? null,
+        domReady: loadMetrics?.domReady ?? null,
+        fullLoad: loadMetrics?.fullLoad ?? null,
       },
     });
 
@@ -281,7 +284,7 @@ export async function runAccessibilityScan(
 // MVP version: scans the homepage + up to 10 linked pages
 // Production version: full site crawl with Puppeteer
 
-async function crawlAndScan(baseUrl: string): Promise<PageResult[]> {
+async function crawlAndScan(baseUrl: string): Promise<{ pages: PageResult[]; loadMetrics: { ttfb: number; domReady: number; fullLoad: number } | null }> {
   // Dynamic import for server-side only
   const puppeteer = await import("puppeteer");
   const axeCore = await import("axe-core");
@@ -295,6 +298,7 @@ async function crawlAndScan(baseUrl: string): Promise<PageResult[]> {
   const visited = new Set<string>();
   const toVisit = [baseUrl];
   const maxPages = 10; // Free tier limit
+  let loadMetrics: { ttfb: number; domReady: number; fullLoad: number } | null = null;
 
   try {
     while (toVisit.length > 0 && visited.size < maxPages) {
@@ -307,6 +311,18 @@ async function crawlAndScan(baseUrl: string): Promise<PageResult[]> {
 
       try {
         await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+
+        // Capture load speed on first page only
+        if (!loadMetrics) {
+          loadMetrics = await page.evaluate(() => {
+            const t = performance.timing;
+            return {
+              ttfb: t.responseStart - t.navigationStart,
+              domReady: t.domContentLoadedEventEnd - t.navigationStart,
+              fullLoad: t.loadEventEnd - t.navigationStart,
+            };
+          }).catch(() => null);
+        }
 
         // Inject axe-core and run analysis
         await page.addScriptTag({
@@ -399,7 +415,7 @@ async function crawlAndScan(baseUrl: string): Promise<PageResult[]> {
     await browser.close();
   }
 
-  return results;
+  return { pages: results, loadMetrics };
 }
 
 // ─── Export for API routes ───
