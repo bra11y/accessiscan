@@ -40,11 +40,6 @@ export async function POST(request: NextRequest) {
 
     // ── Authenticated path: unchanged ──
     const userId = (session.user as any).id;
-    const plan = (session.user as any).plan;
-
-    const planLimits: Record<string, number> = {
-      FREE: 999, PRO: 999, BUSINESS: 999, ENTERPRISE: 999,
-    };
 
     let site = await db.site.findFirst({ where: { url, userId } });
 
