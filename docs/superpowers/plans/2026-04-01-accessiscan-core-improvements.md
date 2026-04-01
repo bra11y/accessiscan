@@ -1470,6 +1470,162 @@ git commit -m "feat: rebuild dashboard with Recharts charts, card grid, date fil
 
 ---
 
+## Task 13: UX Fixes — Alt text evidence, dynamic badges, readability, scan width
+
+**Files:**
+- Modify: `app/dashboard/issues/page.tsx`
+- Modify: `app/dashboard/layout.tsx`
+- Modify: `app/dashboard/scan/page.tsx`
+- Modify: `app/api/issues/route.ts` (add count endpoint)
+
+**Problems:**
+1. Alt text issues (`image-alt` rule) show only a raw code snippet — the actual image is not visible, making it hard to judge what alt text to write
+2. Sidebar badges show hardcoded `5` (Issues) and `4` (Human Review) — these are fake numbers
+3. Dashboard readability is poor — fonts too small, contrast insufficient
+4. Scan page container is `max-w-4xl` (896px) — too narrow, content feels cramped
+
+---
+
+- [ ] **Step 1: Add image preview for alt text issues in issues panel**
+
+In `app/dashboard/issues/page.tsx`, find the expanded row's "Element" section:
+
+```tsx
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">Element</p>
+                  <code className="block px-3 py-2 bg-surface rounded-lg font-mono text-[11px] text-amber-400 border break-all" style={{ borderColor: "var(--color-border)" }}>
+                    {issue.htmlSnippet || issue.element}
+                  </code>
+                </div>
+```
+
+Replace it with:
+
+```tsx
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wide mb-1">
+                    {issue.ruleId === "image-alt" ? "Image missing alt text" : "Element"}
+                  </p>
+                  {/* For image-alt issues: extract src and show a live preview */}
+                  {issue.ruleId === "image-alt" && (() => {
+                    const srcMatch = (issue.htmlSnippet || "").match(/src=["']([^"']+)["']/);
+                    const src = srcMatch?.[1];
+                    return src ? (
+                      <div className="space-y-2">
+                        <div className="bg-surface rounded-lg border overflow-hidden" style={{ borderColor: "var(--color-border)" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={src}
+                            alt="Image missing alt text — shown for context"
+                            className="max-h-32 w-auto mx-auto block p-2"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-slate-500 font-mono break-all px-1">src: {src}</p>
+                      </div>
+                    ) : null;
+                  })()}
+                  <code className="block px-3 py-2 bg-surface rounded-lg font-mono text-[11px] text-amber-400 border break-all mt-1" style={{ borderColor: "var(--color-border)" }}>
+                    {issue.htmlSnippet || issue.element}
+                  </code>
+                </div>
+```
+
+- [ ] **Step 2: Fix hardcoded sidebar badges — fetch real counts**
+
+In `app/dashboard/layout.tsx`, add a data-fetching hook at the top of the component:
+
+```tsx
+  const [issueCounts, setIssueCounts] = useState({ openIssues: 0, pendingReviews: 0 });
+
+  useEffect(() => {
+    fetch("/api/issues?status=OPEN&page=1")
+      .then((r) => r.json())
+      .then((d) => {
+        setIssueCounts((prev) => ({ ...prev, openIssues: d.pagination?.total ?? 0 }));
+      })
+      .catch(() => {});
+    fetch("/api/reviews?status=PENDING")
+      .then((r) => r.json())
+      .then((d) => {
+        setIssueCounts((prev) => ({ ...prev, pendingReviews: d.issues?.length ?? 0 }));
+      })
+      .catch(() => {});
+  }, []);
+```
+
+Add `useEffect` to the imports at the top of the file:
+```tsx
+import { useState, useEffect } from "react";
+```
+
+Then replace the hardcoded badge values:
+
+Find:
+```tsx
+                {!collapsed && item.label === "Issues" && (
+                  <span className="ml-auto bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    5
+                  </span>
+                )}
+                {!collapsed && item.label === "Human Review" && (
+                  <span className="ml-auto bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    4
+                  </span>
+                )}
+```
+
+Replace with:
+```tsx
+                {!collapsed && item.label === "Issues" && issueCounts.openIssues > 0 && (
+                  <span className="ml-auto bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {issueCounts.openIssues > 99 ? "99+" : issueCounts.openIssues}
+                  </span>
+                )}
+                {!collapsed && item.label === "Human Review" && issueCounts.pendingReviews > 0 && (
+                  <span className="ml-auto bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {issueCounts.pendingReviews > 99 ? "99+" : issueCounts.pendingReviews}
+                  </span>
+                )}
+```
+
+- [ ] **Step 3: Fix scan page width — remove narrow constraint**
+
+In `app/dashboard/scan/page.tsx`, line 212, change:
+
+```tsx
+    <div className="p-8 max-w-4xl mx-auto">
+```
+
+To:
+
+```tsx
+    <div className="p-8 max-w-6xl mx-auto">
+```
+
+- [ ] **Step 4: Improve dashboard readability**
+
+In `app/dashboard/page.tsx`, apply these readability improvements:
+
+1. Main heading font size: change `text-2xl` → `text-3xl` on the Dashboard `<h1>`
+2. Stat card labels: change `text-[11px]` → `text-xs` on the `StatCard` label `<p>`
+3. Stat card sub-text: change `text-[11px]` → `text-xs`
+4. Section heading: change `text-sm` → `text-base font-bold` on "Recent Scans" `<h2>`
+5. Scan list site name: change `text-sm` → `text-base` on the site name `<p>`
+6. Scan list meta (last scanned): change `text-xs` → `text-sm` on the date line
+7. Page padding: change `p-8` → `p-8 lg:p-10` on the outer wrapper
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add app/dashboard/issues/page.tsx app/dashboard/layout.tsx app/dashboard/scan/page.tsx app/dashboard/page.tsx
+git commit -m "fix: alt text image preview, dynamic sidebar badges, scan width, readability"
+```
+
+---
+
 ## Self-Review Notes
 
 - All 11 files in the spec's File Touch List are covered.
