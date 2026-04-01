@@ -209,4 +209,51 @@ export function useStartScan() {
   return { startScan, loading, error, scanId };
 }
 
+// ─── UD Scan Progress Polling ───
+
+export function useUDScanProgress(reportId: string | null) {
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState<string>("PENDING");
+  const [report, setReport] = useState<any>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!reportId) return;
+
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/ud-scan?reportId=${reportId}`);
+        const data = await res.json();
+
+        if (data.status === "COMPLETED") {
+          setProgress(100);
+          setStatus("COMPLETED");
+          setReport(data.report);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+        } else if (data.status === "FAILED") {
+          setStatus("FAILED");
+          if (intervalRef.current) clearInterval(intervalRef.current);
+        } else if (data.status === "RUNNING") {
+          setProgress(50);
+          setStatus("RUNNING");
+        } else {
+          setProgress(10);
+          setStatus("PENDING");
+        }
+      } catch (e) {
+        console.error("UD poll error:", e);
+      }
+    };
+
+    poll();
+    intervalRef.current = setInterval(poll, 2000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [reportId]);
+
+  return { progress, status, report };
+}
+
 export { useFetch };
