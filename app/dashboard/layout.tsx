@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
+import { useTheme } from "@/app/providers";
 import {
   BarChart3,
   ScanLine,
@@ -37,6 +38,23 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
+  const [issueCounts, setIssueCounts] = useState({ openIssues: 0, pendingReviews: 0 });
+
+  useEffect(() => {
+    fetch("/api/issues?status=OPEN&page=1")
+      .then((r) => r.json())
+      .then((d) => {
+        setIssueCounts((prev) => ({ ...prev, openIssues: d.pagination?.total ?? 0 }));
+      })
+      .catch(() => {});
+    fetch("/api/reviews?status=PENDING")
+      .then((r) => r.json())
+      .then((d) => {
+        setIssueCounts((prev) => ({ ...prev, pendingReviews: d.issues?.length ?? 0 }));
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-surface">
@@ -91,14 +109,14 @@ export default function DashboardLayout({
                 {!collapsed && <span>{item.label}</span>}
 
                 {/* Badge for Issues */}
-                {!collapsed && item.label === "Issues" && (
+                {!collapsed && item.label === "Issues" && issueCounts.openIssues > 0 && (
                   <span className="ml-auto bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                    5
+                    {issueCounts.openIssues > 99 ? "99+" : issueCounts.openIssues}
                   </span>
                 )}
-                {!collapsed && item.label === "Human Review" && (
+                {!collapsed && item.label === "Human Review" && issueCounts.pendingReviews > 0 && (
                   <span className="ml-auto bg-brand-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                    4
+                    {issueCounts.pendingReviews > 99 ? "99+" : issueCounts.pendingReviews}
                   </span>
                 )}
               </Link>
@@ -135,6 +153,43 @@ export default function DashboardLayout({
           </div>
         )}
 
+        {/* Theme Switcher */}
+        {!collapsed && (
+          <div
+            className="border-t px-3 pt-3 pb-1"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2 px-1">
+              Appearance
+            </p>
+            <div className="flex gap-1" role="group" aria-label="Theme selection">
+              {(
+                [
+                  { id: "default", label: "Dark", icon: "🌙" },
+                  { id: "light", label: "Light", icon: "☀️" },
+                  { id: "high-contrast", label: "High contrast", icon: "◑" },
+                  { id: "reduced", label: "Reduced motion", icon: "—" },
+                ] as const
+              ).map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTheme(t.id)}
+                  aria-label={`Switch to ${t.label} theme`}
+                  aria-pressed={theme === t.id}
+                  title={t.label}
+                  className={`flex-1 flex items-center justify-center py-1.5 rounded-lg text-sm transition-colors min-touch ${
+                    theme === t.id
+                      ? "bg-brand-600/30 text-brand-300"
+                      : "text-slate-500 hover:text-slate-300 hover:bg-surface-overlay/50"
+                  }`}
+                >
+                  <span aria-hidden="true">{t.icon}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Collapse + Sign Out */}
         <div
           className="border-t p-3 space-y-1"
@@ -158,6 +213,17 @@ export default function DashboardLayout({
             <LogOut size={18} />
             {!collapsed && <span>Sign out</span>}
           </button>
+          {!collapsed && (
+            <a
+              href="https://ko-fi.com/bra11y"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] text-slate-500 hover:text-slate-300 hover:underline transition-colors w-full"
+            >
+              <span aria-hidden="true">☕</span>
+              <span>Buy me a coffee</span>
+            </a>
+          )}
         </div>
       </nav>
 
