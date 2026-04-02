@@ -16,15 +16,15 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "AccessiScan — Know exactly where your site fails accessibility",
+  title: "AccessiScan — Find every accessibility failure on your site in 60 seconds",
   description:
-    "Automated WCAG 2.1 AA, ADA, Section 508, and EAA compliance scanning. Full results instantly. No account needed for your first scan.",
+    "Paste a URL. Get a complete list of accessibility failures — severity levels, WCAG criteria, and ready-to-paste code fixes. Covers WCAG 2.1 AA, ADA, Section 508, and EAA 2025.",
   keywords:
     "accessibility audit, WCAG testing, ADA compliance, Section 508, EAA, web accessibility, accessibility scanner, VPAT",
   openGraph: {
-    title: "AccessiScan — Know exactly where your site fails accessibility",
+    title: "AccessiScan — Find every accessibility failure on your site in 60 seconds",
     description:
-      "Run a free accessibility audit on any URL. Full results, AI fix suggestions, and human expert review.",
+      "98% of websites fail basic accessibility checks. Find out where yours fails — and exactly how to fix it. Free scan, no account needed.",
     type: "website",
   },
 };
@@ -149,14 +149,14 @@ export default async function HomePage() {
                 lineHeight: 1.2, letterSpacing: "-0.02em", marginBottom: 18,
               }}
             >
-              Know exactly where your site fails accessibility.
+              Most websites exclude 1 in 6 visitors. Find out if yours does.
             </h1>
 
             <p style={{
               fontSize: "1.0625rem", color: "var(--text-lp-3)",
               lineHeight: 1.7, marginBottom: 32, maxWidth: 460,
             }}>
-              AccessiScan audits any URL against WCAG 2.1 AA, ADA, Section 508, and EAA 2025 in seconds — and gives you a prioritised fix list, not a wall of error codes.
+              Accessibility failures cost you customers, damage your reputation, and in Europe carry fines up to €75,000. AccessiScan finds every issue in seconds — and tells you exactly what to fix, not just that something is broken.
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 24 }}>
@@ -326,10 +326,10 @@ export default async function HomePage() {
           }}
         >
           {[
-            { val: "98%",    label: "of websites fail basic accessibility checks" },
-            { val: "€75K",   label: "max fine under the European Accessibility Act" },
-            { val: "1 in 6", label: "people worldwide live with a disability" },
-            { val: "70%",    label: "of issues require human review to fully catch" },
+            { val: "98%",    label: "of sites fail — most have no idea" },
+            { val: "€75K",   label: "max EAA fine for non-compliance in Europe" },
+            { val: "1 in 6", label: "visitors you may be turning away" },
+            { val: "70%",    label: "of real failures automated tools alone miss" },
           ].map(({ val, label }, i, arr) => (
             <div
               key={val}
@@ -349,20 +349,50 @@ export default async function HomePage() {
         <section id="features" aria-labelledby="features-heading" style={{ padding: "72px 40px", maxWidth: 1100, margin: "0 auto" }}>
           <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--brand-lp)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Features</p>
           <h2 id="features-heading" style={{ fontSize: "clamp(1.5rem, 2.8vw, 2rem)", fontWeight: 700, color: "var(--text-lp-1)", letterSpacing: "-0.01em", lineHeight: 1.25, marginBottom: 12 }}>
-            Everything you need to fix accessibility
+            Stop flying blind on accessibility
           </h2>
           <p style={{ fontSize: "1rem", color: "var(--text-lp-3)", maxWidth: 500, lineHeight: 1.7, marginBottom: 40 }}>
-            From automated detection to expert human review to legal-grade compliance reports.
+            Automated scans catch the obvious. Human experts catch the rest. We give you both.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 1, background: "var(--border-1)", border: "1px solid var(--border-1)", borderRadius: 12, overflow: "hidden" }}>
             {[
-              { icon: <Search size={20} />, title: "Automated scanning",    desc: "axe-core engine checks WCAG 2.1 AA, ADA, Section 508, and EAA 2025 across every page — in seconds.",                                      tier: "Free tier" },
-              { icon: <Eye size={20} />, title: "Vision simulation",     desc: "Preview your site through 8 color blindness and low vision filters. See what 1 in 12 men experience on your pages.",                    tier: "Pro+" },
-              { icon: <Users size={20} />, title: "Human expert review",   desc: "Certified specialists review what automation misses — keyboard flows, cognitive load, ARIA context, focus order.",                      tier: "Pro+" },
-              { icon: <Zap size={20} />, title: "AI fix suggestions",     desc: "Every issue includes a ready-to-paste code fix with the exact WCAG criterion and implementation notes.",                                 tier: "All plans" },
-              { icon: <FileText size={20} />, title: "VPAT reports",           desc: "Generate audit-ready Voluntary Product Accessibility Templates for legal, procurement, and enterprise compliance.",                      tier: "Business+" },
-              { icon: <Globe size={20} />, title: "Universal Design audit", desc: "Go beyond WCAG. Evaluate against all 7 Universal Design principles for deeper, more inclusive coverage.",                               tier: "Pro+" },
+              {
+                icon: <Search size={20} />,
+                title: "Automated scanning",
+                desc: "Paste any URL and get a complete failure list in seconds. Every issue maps to the exact WCAG criterion, ADA provision, and EAA article it violates — not just an error code.",
+                tier: "Free tier",
+              },
+              {
+                icon: <Eye size={20} />,
+                title: "Vision simulation",
+                desc: "See your site through the eyes of 300 million colour-blind people. Catch contrast failures and layout issues your own eyes can't detect.",
+                tier: "Pro+",
+              },
+              {
+                icon: <Users size={20} />,
+                title: "Human expert review",
+                desc: "Automated tools catch roughly 40% of accessibility failures. Certified specialists find the rest — keyboard traps, focus order errors, ARIA misuse, cognitive load issues.",
+                tier: "Pro+",
+              },
+              {
+                icon: <Zap size={20} />,
+                title: "AI fix suggestions",
+                desc: "Every issue comes with a ready-to-paste code fix. Not a vague recommendation — the exact change, the exact criterion, the exact line to fix.",
+                tier: "All plans",
+              },
+              {
+                icon: <FileText size={20} />,
+                title: "VPAT reports",
+                desc: "Close enterprise contracts and meet procurement requirements with audit-ready VPAT exports. Legally defensible. Immediately sendable.",
+                tier: "Business+",
+              },
+              {
+                icon: <Globe size={20} />,
+                title: "Universal Design audit",
+                desc: "WCAG is the legal floor, not the ceiling. UD audits surface exclusions that compliance standards never mention — but real users experience every day.",
+                tier: "Pro+",
+              },
             ].map(({ icon, title, desc, tier }) => (
               <div
                 key={title}
@@ -400,13 +430,25 @@ export default async function HomePage() {
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--brand-lp)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>How it works</p>
             <h2 id="how-heading" style={{ fontSize: "clamp(1.5rem, 2.8vw, 2rem)", fontWeight: 700, color: "var(--text-lp-1)", letterSpacing: "-0.01em", marginBottom: 40 }}>
-              From URL to compliant in three steps
+              Most accessibility audits take weeks. This takes three steps.
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
               {[
-                { n: "1", title: "Scan",         desc: "Enter any URL. Our engine crawls your pages and runs every major accessibility check in seconds. No account or credit card needed for your first scan." },
-                { n: "2", title: "Review",        desc: "See a prioritised issue list — severity levels, WCAG criterion references, element selectors, and flags for issues that need human review." },
-                { n: "3", title: "Fix & report",  desc: "Apply AI-generated code fixes, track remediation over time, and export compliance reports your legal team can actually use." },
+                {
+                  n: "1",
+                  title: "Scan",
+                  desc: "Paste any URL. Our engine checks every page against WCAG 2.1 AA, ADA, Section 508, and EAA 2025 in under 60 seconds. No account needed. No credit card.",
+                },
+                {
+                  n: "2",
+                  title: "Review",
+                  desc: "See a prioritised issue list — not a wall of error codes. Each failure shows severity, which users it affects, the exact element, and a flag when human eyes are needed to confirm.",
+                },
+                {
+                  n: "3",
+                  title: "Fix & report",
+                  desc: "Apply AI-generated code fixes directly. Track your progress scan over scan. Export compliance reports your legal and procurement teams can actually use.",
+                },
               ].map(({ n, title, desc }) => (
                 <div key={n} style={{ background: "var(--surface-1)", border: "1px solid var(--border-1)", borderRadius: 12, padding: "28px 24px" }}>
                   <div
@@ -434,26 +476,26 @@ export default async function HomePage() {
         >
           <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--brand-lp)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Pricing</p>
           <h2 id="pricing-heading" style={{ fontSize: "clamp(1.5rem, 2.8vw, 2rem)", fontWeight: 700, color: "var(--text-lp-1)", letterSpacing: "-0.01em", lineHeight: 1.25, marginBottom: 12 }}>
-            Simple, transparent pricing
+            Start free. Scale when compliance gets serious.
           </h2>
           <p style={{ fontSize: "1rem", color: "var(--text-lp-3)", maxWidth: 500, lineHeight: 1.7, marginBottom: 40 }}>
-            Start free. Upgrade when you need human expert reviews, vision simulations, and compliance reports.
+            The free plan catches more than most paid tools. Upgrade for human expert review, vision simulations, and the reports your legal team will ask for.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
             {[
               {
-                name: "Free", price: "$0", period: "", desc: "Try AccessiScan on one site",
+                name: "Free", price: "$0", period: "", desc: "See what you're missing — no card needed",
                 icon: <Zap size={18} />, cta: "Get Started", ctaHref: "/signup", ctaStyle: "ghost" as const,
                 features: ["1 website", "5 pages per scan", "3 scans per month", "WCAG 2.1 AA checks", "Basic issue reports"],
               },
               {
-                name: "Pro", price: "$49", period: "/mo", desc: "For freelancers and small teams",
+                name: "Pro", price: "$49", period: "/mo", desc: "For developers who take accessibility seriously",
                 icon: <Shield size={18} />, cta: "Start 14-Day Trial", ctaHref: "/signup", ctaStyle: "primary" as const, popular: true,
                 features: ["5 websites", "50 pages per scan", "30 scans per month", "Human expert review", "Vision simulations"],
               },
               {
-                name: "Business", price: "$149", period: "/mo", desc: "For agencies and enterprise compliance",
+                name: "Business", price: "$149", period: "/mo", desc: "For agencies that need to prove compliance",
                 icon: <Crown size={18} />, cta: "Start 14-Day Trial", ctaHref: "/signup", ctaStyle: "primary" as const,
                 features: ["25 websites", "200 pages per scan", "Unlimited scans", "VPAT + audit reports", "Dedicated support"],
               },
@@ -524,10 +566,10 @@ export default async function HomePage() {
         {/* ── FINAL CTA ── */}
         <section aria-labelledby="cta-heading" style={{ padding: "72px 40px", textAlign: "center", maxWidth: 600, margin: "0 auto" }}>
           <h2 id="cta-heading" style={{ fontSize: "clamp(1.5rem, 2.8vw, 2rem)", fontWeight: 700, color: "var(--text-lp-1)", marginBottom: 16 }}>
-            Start with a free scan — no sign-up needed.
+            Don&apos;t wait for a complaint to find out your site excludes people.
           </h2>
           <p style={{ fontSize: "1rem", color: "var(--text-lp-3)", lineHeight: 1.7, marginBottom: 32 }}>
-            See your real accessibility issues in under 60 seconds. Create a free account when you&apos;re ready to fix them and track progress over time.
+            Most teams discover accessibility failures from a user complaint — or worse, a lawsuit. One free scan gives you the full picture in under 60 seconds. No account. No credit card. Just the truth about your site.
           </p>
           <Link
             href="/scan"
@@ -551,7 +593,7 @@ export default async function HomePage() {
         flexWrap: "wrap", gap: 12,
         fontSize: "0.9375rem", color: "var(--text-lp-3)",
       }}>
-        <span>© {new Date().getFullYear()} AccessiScan. Building a more inclusive web.</span>
+        <span>© {new Date().getFullYear()} AccessiScan. Making the web work for everyone.</span>
         <nav aria-label="Footer links" style={{ display: "flex", gap: 20 }}>
           <Link href="/pricing" style={{ color: "var(--text-lp-3)", textDecoration: "none" }}>Pricing</Link>
           <a href="mailto:hello@accessiscan.com" style={{ color: "var(--text-lp-3)", textDecoration: "none" }}>Contact</a>
