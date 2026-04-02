@@ -60,7 +60,7 @@ export async function runScannerForGuest(
   });
 
   try {
-    const pages = await crawlAndScan(url);
+    const { pages } = await crawlAndScan(url);
 
     const allIssues: GuestIssue[] = pages.flatMap((page) =>
       page.issues.map((issue) => ({

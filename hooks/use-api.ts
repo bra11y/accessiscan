@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import type { UDReport } from "@/types/ud";
 
 // ─── Generic Fetch Hook ───
 
@@ -216,7 +217,7 @@ export function useStartScan() {
 export function useUDScanProgress(reportId: string | null) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<string>("PENDING");
-  const [report, setReport] = useState<any>(null);
+  const [report, setReport] = useState<UDReport | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
