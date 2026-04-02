@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - heading "Sign in to AccessiScan" [level=1] [ref=e13]
+      - paragraph [ref=e14]: Your accessibility auditing dashboard
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - text: Email address
+          - textbox "Email address" [ref=e18]:
+            - /placeholder: you@example.com
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - text: Password
+            - link "Forgot password?" [ref=e21] [cursor=pointer]:
+              - /url: /forgot-password
+          - textbox "Password" [ref=e22]:
+            - /placeholder: Enter your password
+        - button "Sign in" [ref=e23]
+      - paragraph [ref=e24]:
+        - text: Don't have an account?
+        - link "Create one free" [ref=e25] [cursor=pointer]:
+          - /url: /signup
+    - paragraph [ref=e26]: Accessibility is not optional. It's a right.

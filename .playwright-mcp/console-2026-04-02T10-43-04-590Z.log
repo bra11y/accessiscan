@@ -1,0 +1,30 @@
+[    2764ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/:0
+[    3860ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///./node_modules/react-dom/cjs/react-dom.development.js:29889
+[    4022ms] TypeError: Cannot read properties of undefined (reading 'call')
+    at Object.__webpack_require__ [as require] (file:///Users/mac/Downloads/accessiscan/.next/server/webpack-runtime.js:33:43)
+    at require (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:39:19918)
+    at <unknown> (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108279)
+    at eo (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108464)
+    at <unknown> (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:110693)
+    at Object._fromJSON (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:111249)
+    at JSON.parse (<anonymous>)
+    at eu (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108958)
+    at en (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:108026)
+    at <unknown> (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115168)
+    at <unknown> (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115185)
+    at <unknown> (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115218)
+    at <unknown> (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115235)
+    at t (file:///Users/mac/Downloads/accessiscan/node_modules/next/dist/compiled/next-server/app-page.runtime.dev.js:35:115458)
+[    4060ms] [LOG] [HMR] connected @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:38
+[    6437ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[    6490ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ webpack-internal:///./node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:349
+[    6969ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/css/app/layout.css?v=1775126591212:0
+[    7108ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/app/page.js:0
+[    7109ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/main-app.js?v=1775126591212:0
+[    7109ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/app/layout.js:0
+[    7109ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/chunks/app-pages-internals.js:0
+[   10111ms] [WARNING] The resource http://localhost:3000/_next/static/media/36966cca54120369-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
+[   10111ms] [WARNING] The resource http://localhost:3000/_next/static/media/7b0b24f36b1a6d0b-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
+[   10111ms] [WARNING] The resource http://localhost:3000/_next/static/media/9816a0e0ed309b6c-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
+[   10111ms] [WARNING] The resource http://localhost:3000/_next/static/media/bb3ef058b751a6ad-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
+[   10111ms] [WARNING] The resource http://localhost:3000/_next/static/media/bc08e10e1c60a660-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3000/:0
