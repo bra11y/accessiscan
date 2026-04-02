@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible, JetBrains_Mono, Outfit } from "next/font/google";
+import { Atkinson_Hyperlegible, JetBrains_Mono, Outfit, Space_Grotesk } from "next/font/google";
 import Providers from "./providers";
 import "./globals.css";
 
@@ -19,6 +19,13 @@ const fontMono = JetBrains_Mono({
 const fontDisplay = Outfit({
   subsets: ["latin"],
   variable: "--font-display",
+  display: "swap",
+});
+
+const fontGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-grotesk",
   display: "swap",
 });
 
@@ -45,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fontBody.variable} ${fontMono.variable} ${fontDisplay.variable}`}
+      className={`${fontBody.variable} ${fontMono.variable} ${fontDisplay.variable} ${fontGrotesk.variable}`}
     >
       <body className="font-sans antialiased bg-surface text-slate-200">
         {/* Skip to main content — Accessibility Pyramid: Foundation */}
