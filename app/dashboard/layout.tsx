@@ -12,11 +12,12 @@ import {
   Eye,
   Users,
   ShieldCheck,
-  Settings,
   LogOut,
   ChevronLeft,
   Layers,
   Bell,
+  Menu,
+  X,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -37,9 +38,15 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const [issueCounts, setIssueCounts] = useState({ openIssues: 0, pendingReviews: 0 });
+
+  // Close mobile nav on route change
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     fetch("/api/issues?status=OPEN&page=1")
@@ -57,11 +64,25 @@ export default function DashboardLayout({
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-surface">
+    <div className="flex h-screen overflow-hidden bg-surface">
+      {/* ─── Mobile backdrop ─── */}
+      {mobileNavOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          onClick={() => setMobileNavOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ─── Sidebar ─── */}
       <nav
         aria-label="Main navigation"
-        className="flex flex-col bg-surface-raised border-r transition-all duration-200"
+        className={`
+          fixed inset-y-0 left-0 z-50 flex flex-col bg-surface-raised border-r overflow-y-auto flex-shrink-0
+          transition-transform duration-200
+          md:static md:z-auto md:translate-x-0
+          ${mobileNavOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
         style={{
           width: collapsed ? 72 : 240,
           borderColor: "var(--color-border)",
@@ -76,14 +97,23 @@ export default function DashboardLayout({
             <ScanLine size={18} className="text-white" />
           </div>
           {!collapsed && (
-            <div>
-              <p className="font-display text-sm font-bold text-slate-50 leading-tight">
-                AccessiScan
-              </p>
-              <p className="text-[10px] text-brand-400 font-semibold uppercase tracking-widest">
-                Pro Dashboard
-              </p>
-            </div>
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="font-display text-sm font-bold text-slate-50 leading-tight">
+                  AccessiScan
+                </p>
+                <p className="text-[10px] text-brand-400 font-semibold uppercase tracking-widest">
+                  Pro Dashboard
+                </p>
+              </div>
+              <button
+                onClick={() => setMobileNavOpen(false)}
+                aria-label="Close navigation"
+                className="md:hidden p-1 rounded text-slate-500 hover:text-slate-300"
+              >
+                <X size={16} />
+              </button>
+            </>
           )}
         </div>
 
@@ -228,7 +258,25 @@ export default function DashboardLayout({
       </nav>
 
       {/* ─── Main Content ─── */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* Mobile top bar */}
+        <div
+          className="md:hidden flex items-center gap-3 px-4 py-3 bg-surface-raised border-b flex-shrink-0"
+          style={{ borderColor: "var(--color-border)" }}
+        >
+          <button
+            onClick={() => setMobileNavOpen(true)}
+            aria-label="Open navigation menu"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-surface-overlay"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
+            <ScanLine size={14} className="text-white" />
+          </div>
+          <span className="font-display text-sm font-bold text-slate-50">AccessiScan</span>
+        </div>
+
         <main id="main-content" className="flex-1 overflow-auto">
           {children}
         </main>

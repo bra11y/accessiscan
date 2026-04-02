@@ -120,11 +120,12 @@ model Scan {
   issueCount  Int        @default(0)
   fixedCount  Int        @default(0)
   duration    Int?       // scan duration in seconds
-  ttfb        Int?       // time to first byte (ms)
-  domReady    Int?       // DOMContentLoaded (ms)
-  fullLoad    Int?       // full page load (ms)
-  startedAt   DateTime?
-  completedAt DateTime?
+  ttfb         Int?       // time to first byte (ms)
+  domReady     Int?       // DOMContentLoaded (ms)
+  fullLoad     Int?       // full page load (ms)
+  errorMessage String?    // failure reason
+  startedAt    DateTime?
+  completedAt  DateTime?
   createdAt   DateTime   @default(now())
 
   site   Site    @relation(fields: [siteId], references: [id], onDelete: Cascade)
@@ -158,9 +159,10 @@ model Issue {
   rule        String        // e.g., "WCAG 2.1 - 1.1.1"
   ruleId      String?       // axe-core rule ID
   standard    Standard      @default(WCAG)
-  element     String?       // HTML element selector
-  htmlSnippet String?       // the actual HTML code
-  pageUrl     String?
+  element           String?  // HTML element selector
+  htmlSnippet       String?  // the actual HTML code
+  elementScreenshot String?  // base64 PNG data URL — element in context
+  pageUrl           String?
   status      IssueStatus   @default(OPEN)
   needsHuman  Boolean       @default(false)
   fixSuggestion String?     // auto-generated fix recommendation

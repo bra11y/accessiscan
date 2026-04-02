@@ -129,7 +129,7 @@ export default function ScanPage() {
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   const { startScan, loading: scanLoading, error: scanError, scanId } = useStartScan();
-  const { progress, status, result } = useScanProgress(scanId);
+  const { progress, status, result, failReason } = useScanProgress(scanId);
 
   const liveRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -301,7 +301,7 @@ export default function ScanPage() {
         {/* Error */}
         {(viewState === "error" || scanError) && (
           <div role="alert" className="mt-4 p-3 bg-red-900/30 border border-red-800 rounded-lg text-red-300 text-sm">
-            {scanError || "Scan failed. Please check the URL and try again."}
+            {scanError || failReason || "Scan failed. Please check the URL and try again."}
           </div>
         )}
 

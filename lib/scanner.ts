@@ -51,6 +51,7 @@ interface IssueResult {
   htmlSnippet: string;
   needsHuman: boolean;
   fixSuggestion: string;
+  elementScreenshot?: string;
 }
 
 // ─── Severity Mapping from axe-core impact levels ───
@@ -201,6 +202,7 @@ export async function runAccessibilityScan(
             standard: issue.standard,
             element: issue.element,
             htmlSnippet: issue.htmlSnippet,
+            elementScreenshot: issue.elementScreenshot ?? null,
             pageUrl: page.url,
             needsHuman: issue.needsHuman,
             fixSuggestion: issue.fixSuggestion,
@@ -272,9 +274,10 @@ export async function runAccessibilityScan(
     };
   } catch (error) {
     // Mark scan as failed
+    const msg = error instanceof Error ? error.message : String(error);
     await db.scan.update({
       where: { id: scanId },
-      data: { status: "FAILED", completedAt: new Date() },
+      data: { status: "FAILED", completedAt: new Date(), errorMessage: msg },
     });
     throw error;
   }
@@ -291,7 +294,7 @@ async function crawlAndScan(baseUrl: string): Promise<{ pages: PageResult[]; loa
 
   const browser = await puppeteer.default.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   });
 
   const results: PageResult[] = [];
@@ -374,10 +377,47 @@ async function crawlAndScan(baseUrl: string): Promise<{ pages: PageResult[]; loa
             }))
         );
 
+        // ─── Capture element screenshots (deduplicated by selector) ───
+        const shotCache = new Map<string, string>();
+        const issuesWithScreenshots = await Promise.all(
+          issues.map(async (issue) => {
+            try {
+              const selector = issue.element;
+              if (!selector || selector === "unknown") return issue;
+
+              if (shotCache.has(selector)) {
+                return { ...issue, elementScreenshot: shotCache.get(selector) };
+              }
+
+              const el = await page.$(selector);
+              if (!el) return issue;
+
+              const box = await el.boundingBox();
+              if (!box || box.width === 0 || box.height === 0) return issue;
+
+              const pad = 24;
+              const viewport = page.viewport() || { width: 1280, height: 800 };
+              const clip = {
+                x: Math.max(0, box.x - pad),
+                y: Math.max(0, box.y - pad),
+                width: Math.min(box.width + pad * 2, viewport.width),
+                height: Math.min(box.height + pad * 2, 400),
+              };
+
+              const buf = await page.screenshot({ clip, type: "png" }) as Buffer;
+              const dataUrl = `data:image/png;base64,${buf.toString("base64")}`;
+              shotCache.set(selector, dataUrl);
+              return { ...issue, elementScreenshot: dataUrl };
+            } catch {
+              return issue;
+            }
+          })
+        );
+
         results.push({
           url,
           title,
-          issues,
+          issues: issuesWithScreenshots,
         });
 
         // Discover linked pages (same domain only)

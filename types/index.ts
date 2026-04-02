@@ -59,6 +59,7 @@ export interface Issue {
   standard: Standard;
   element: string;
   htmlSnippet: string;
+  elementScreenshot?: string | null;
   pageUrl: string;
   status: IssueStatus;
   needsHuman: boolean;

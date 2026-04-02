@@ -59,6 +59,7 @@ export function useScanProgress(scanId: string | null) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<string>("PENDING");
   const [result, setResult] = useState<any>(null);
+  const [failReason, setFailReason] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -77,6 +78,7 @@ export function useScanProgress(scanId: string | null) {
           if (intervalRef.current) clearInterval(intervalRef.current);
         } else if (scan.status === "FAILED") {
           setStatus("FAILED");
+          setFailReason(scan.errorMessage || null);
           if (intervalRef.current) clearInterval(intervalRef.current);
         } else {
           // Estimate progress based on pages scanned
@@ -99,7 +101,7 @@ export function useScanProgress(scanId: string | null) {
     };
   }, [scanId]);
 
-  return { progress, status, result };
+  return { progress, status, result, failReason };
 }
 
 // ─── Issues Hook ───
