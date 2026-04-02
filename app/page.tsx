@@ -261,9 +261,9 @@ export default async function HomePage() {
                 <span style={{ fontSize: "0.8125rem", color: "var(--text-lp-2)", fontFamily: "monospace", flex: 1 }}>https://yoursite.com</span>
                 <span aria-hidden="true" style={{ width: 2, height: 14, background: "var(--brand-lp)", borderRadius: 1, animation: "blink 1s step-end infinite" }} />
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 36, background: "var(--brand-lp)", borderRadius: 8, fontFamily: G, fontSize: "0.8125rem", fontWeight: 600, color: "#fff" }}>
-                Scan free →
-              </div>
+              <Link href="/signup" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 36, background: "var(--brand-lp)", borderRadius: 8, fontFamily: G, fontSize: "0.8125rem", fontWeight: 600, color: "#fff", textDecoration: "none" }}>
+                Start free scan →
+              </Link>
               <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 5 }}>
                 {["No setup required", "Up to 5 pages free", "Results in 60 seconds"].map((t) => (
                   <li key={t} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.75rem", color: "var(--text-lp-3)" }}>
@@ -305,7 +305,6 @@ export default async function HomePage() {
               </div>
               <h3 style={{ fontFamily: G, fontSize: "0.9375rem", fontWeight: 600, color: "var(--text-lp-1)", marginBottom: 8, letterSpacing: "-0.01em" }}>Vision simulation</h3>
               <p style={{ fontSize: "0.8125rem", color: "var(--text-lp-3)", lineHeight: 1.65 }}>See your site through the eyes of 300 million colour-blind people before they do.</p>
-              <span style={{ marginTop: 14, display: "inline-block", fontSize: "0.6rem", fontWeight: 700, padding: "3px 8px", borderRadius: 4, background: "rgba(129,140,248,0.1)", color: "var(--brand-lp)", border: "1px solid rgba(129,140,248,0.2)", letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: G }}>Pro+</span>
             </div>
 
             {/* ── Card E: Human expert review ── */}
@@ -315,7 +314,6 @@ export default async function HomePage() {
               </div>
               <h3 style={{ fontFamily: G, fontSize: "0.9375rem", fontWeight: 600, color: "var(--text-lp-1)", marginBottom: 8, letterSpacing: "-0.01em" }}>Human expert review</h3>
               <p style={{ fontSize: "0.8125rem", color: "var(--text-lp-3)", lineHeight: 1.65 }}>Certified specialists catch the 60% of failures automation misses — keyboard traps, ARIA misuse, cognitive load.</p>
-              <span style={{ marginTop: 14, display: "inline-block", fontSize: "0.6rem", fontWeight: 700, padding: "3px 8px", borderRadius: 4, background: "rgba(129,140,248,0.1)", color: "var(--brand-lp)", border: "1px solid rgba(129,140,248,0.2)", letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: G }}>Pro+</span>
             </div>
 
             {/* ── Card F: Scan error state ── */}
@@ -339,7 +337,6 @@ export default async function HomePage() {
                 </div>
                 <h3 style={{ fontFamily: G, fontSize: "0.9375rem", fontWeight: 600, color: "var(--text-lp-1)", marginBottom: 8, letterSpacing: "-0.01em" }}>VPAT &amp; compliance reports</h3>
                 <p style={{ fontSize: "0.8125rem", color: "var(--text-lp-3)", lineHeight: 1.65 }}>Close enterprise deals and meet procurement requirements with audit-ready VPAT exports. Legally defensible. Immediately sendable.</p>
-                <span style={{ marginTop: 14, display: "inline-block", fontSize: "0.6rem", fontWeight: 700, padding: "3px 8px", borderRadius: 4, background: "rgba(129,140,248,0.1)", color: "var(--brand-lp)", border: "1px solid rgba(129,140,248,0.2)", letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: G }}>Business+</span>
               </div>
               <div style={{ flex: 1, minWidth: 200 }}>
                 <div aria-hidden="true" style={{ width: 38, height: 38, background: "rgba(129,140,248,0.12)", border: "1px solid rgba(129,140,248,0.25)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--brand-lp)", marginBottom: 14 }}>
@@ -347,7 +344,6 @@ export default async function HomePage() {
                 </div>
                 <h3 style={{ fontFamily: G, fontSize: "0.9375rem", fontWeight: 600, color: "var(--text-lp-1)", marginBottom: 8, letterSpacing: "-0.01em" }}>Universal Design audit</h3>
                 <p style={{ fontSize: "0.8125rem", color: "var(--text-lp-3)", lineHeight: 1.65 }}>WCAG is the legal floor, not the ceiling. UD audits surface exclusions that compliance standards never mention — but real users experience every day.</p>
-                <span style={{ marginTop: 14, display: "inline-block", fontSize: "0.6rem", fontWeight: 700, padding: "3px 8px", borderRadius: 4, background: "rgba(129,140,248,0.1)", color: "var(--brand-lp)", border: "1px solid rgba(129,140,248,0.2)", letterSpacing: "0.04em", textTransform: "uppercase", fontFamily: G }}>Pro+</span>
               </div>
             </div>
 
@@ -390,7 +386,7 @@ export default async function HomePage() {
               From URL to full report in three steps.
             </h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+          <div className="lp-how-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
             {[
               { n: "01", title: "Scan", desc: "Paste any URL. Our engine checks every page against WCAG 2.1 AA, ADA, Section 508, and EAA 2025 in under 60 seconds. No account. No credit card." },
               { n: "02", title: "Review", desc: "See a prioritised issue list. Each failure shows severity, the exact element, a screenshot in context, and a flag when human eyes are needed to confirm." },
@@ -451,10 +447,11 @@ export default async function HomePage() {
           .lp-hero-grid { grid-template-columns: 1fr !important; }
           .lp-hero-grid > *:last-child { display: none; }
         }
-        /* Mobile: bento collapses to 1 col */
+        /* Mobile: bento + how-it-works collapse to single column */
         @media (max-width: 700px) {
           .lp-bento { grid-template-columns: 1fr !important; }
           .lp-bento > * { grid-column: 1 !important; grid-row: auto !important; }
+          .lp-how-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
