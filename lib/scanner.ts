@@ -298,7 +298,7 @@ async function crawlAndScan(baseUrl: string): Promise<{ pages: PageResult[]; loa
     const puppeteerCore = await import("puppeteer-core");
     // Binary is downloaded at runtime to /tmp — avoids Vercel bundle size limits
     const executablePath = await chromium.default.executablePath(
-      "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.tar"
+      "https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.x64.tar"
     );
     browser = await puppeteerCore.default.launch({
       args: [...(chromium.default.args ?? []), "--no-sandbox", "--disable-setuid-sandbox"],
