@@ -294,11 +294,15 @@ async function crawlAndScan(baseUrl: string): Promise<{ pages: PageResult[]; loa
   // Use @sparticuz/chromium in production (Vercel/Lambda), local puppeteer in dev
   let browser: import("puppeteer-core").Browser;
   if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
-    const chromium = await import("@sparticuz/chromium");
+    const chromium = await import("@sparticuz/chromium-min");
     const puppeteerCore = await import("puppeteer-core");
+    // Binary is downloaded at runtime to /tmp — avoids Vercel bundle size limits
+    const executablePath = await chromium.default.executablePath(
+      "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.tar"
+    );
     browser = await puppeteerCore.default.launch({
       args: [...(chromium.default.args ?? []), "--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath: await chromium.default.executablePath(),
+      executablePath,
       headless: true,
     });
   } else {
