@@ -289,13 +289,25 @@ export async function runAccessibilityScan(
 
 async function crawlAndScan(baseUrl: string): Promise<{ pages: PageResult[]; loadMetrics: { ttfb: number; domReady: number; fullLoad: number } | null }> {
   // Dynamic import for server-side only
-  const puppeteer = await import("puppeteer");
   const axeCore = await import("axe-core");
 
-  const browser = await puppeteer.default.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-  });
+  // Use @sparticuz/chromium in production (Vercel/Lambda), local puppeteer in dev
+  let browser: import("puppeteer-core").Browser;
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+    const chromium = await import("@sparticuz/chromium");
+    const puppeteerCore = await import("puppeteer-core");
+    browser = await puppeteerCore.default.launch({
+      args: [...(chromium.default.args ?? []), "--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: await chromium.default.executablePath(),
+      headless: true,
+    });
+  } else {
+    const puppeteer = await import("puppeteer");
+    browser = await puppeteer.default.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+    }) as any;
+  }
 
   const results: PageResult[] = [];
   const visited = new Set<string>();
